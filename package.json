@@ -38,10 +38,11 @@
     "express": "^4.16.2",
     "express-async-handler": "^1.1.4",
     "express-validator": "^6.4.0",
+    "geojson-validation": "^1.0.2",
     "knex": "^0.95.12",
     "loglevel": "^1.6.8",
     "pg": "^8.3.0",
-    "uuid": "^8.2.0"
+    "uuid": "^8.3.2"
   },
   "devDependencies": {
     "@commitlint/cli": "^11.0.0",
