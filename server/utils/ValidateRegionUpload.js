@@ -6,53 +6,31 @@ function validateRegionUpload(regionObj) {
   const { ownerId, name, shape, show_on_org_map, calculate_statistics } =
     regionObj;
 
-  const errors = {
-    owner: [],
-    name: [],
-    shape: [],
-    show_on_org_map: [],
-    calculate_statistics: [],
-  };
-
   if (!ownerId) {
-    errors.owner.push('You must be logged in to create a region.');
+    return false
   }
 
   if (!name) {
-    errors.name.push('You must provide a name for your new region.');
-  } else if (typeof name !== 'string') {
-    errors.name.push('You must provide a string value for the name attribute.');
+    return false;
+  } 
+  
+  if (typeof name !== 'string') {
+    return false;
   }
 
-  if (!gjv(shape)) {
-    errors.shape.push(
-      'Your shape upload must comply with GeoJSON Format Specification revision 1.0. Please see https://geojson.org/geojson-spec.html#geojson-objects for more information.',
-    );
-  }
+//   if (!gjv(shape)) {
+//     return false;
+//   }
 
   if (show_on_org_map && typeof show_on_org_map !== 'boolean') {
-    errors.show_on_org_map.push(
-      'Show on organization map value should be a boolean',
-    );
+    return false;
   }
 
   if (calculate_statistics && typeof calculate_statistics !== 'boolean') {
-    errors.calculate_statistics.push(
-      'Calculate statistics value should be a boolean',
-    );
+    return false;
   }
 
-  if (
-    !errors.owner &&
-    !errors.name &&
-    !errors.shape &&
-    !errors.show_on_org_map &&
-    !errors.calculate_statistics
-  ) {
-    return 'valid';
-  }
-
-  return errors;
+  return true;
 }
 
 module.exports = validateRegionUpload;

@@ -24,12 +24,26 @@ class RegionRepository extends BaseRepository {
     return object;
   }
 
-  async create(object) {
+  async createRegion(object) {
     const result = await super.create(object);
     expect(result).match({
       id: expect.any(String),
     });
     return result;
+  }
+
+  async update(object) {
+    const result = await this._session
+      .getDB()(this._tableName)
+      .update(object)
+      .where('id', object.id)
+      .returning('*');
+    expect(result).match([
+      {
+        id: expect.any(String),
+      },
+    ]);
+    return result[0];
   }
 }
 
