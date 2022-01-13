@@ -7,8 +7,8 @@ const regionRouter = express.Router();
 
 regionRouter.get(
   '/',
-  helper.apiKeyHandler,
-  helper.verifyJWTHandler,
+  //   helper.apiKeyHandler,
+  helper.errorHandler,
   helper.handlerWrapper(async (req, res, next) => {
     const { ownerId } = req.query;
     const session = new Session();
@@ -16,35 +16,35 @@ regionRouter.get(
     const ownerRegions =
       regionSerivce.regionRepository.getAllByOwnerId(ownerId);
     res.status(200).json({
-        regions: ownerRegions
-    })
+      regions: ownerRegions,
+    });
   }),
 );
 
 regionRouter.get(
   '/:regionId',
-  helper.apiKeyHandler,
-  helper.verifyJWTHandler,
+  //   helper.apiKeyHandler,
+  helper.errorHandler,
   helper.handlerWrapper(async (req, res, next) => {
     const { regionId } = req.params;
     const session = new Session();
     const regionSerivce = new RegionService(session);
-    const region = regionSerivce.getById(regionId)
+    const region = regionSerivce.getById(regionId);
     res.status(200).json({
-        region
-    })
+      region,
+    });
   }),
 );
 
 regionRouter.post(
   '/',
-  helper.apiKeyHandler,
-  helper.verifyJWTHandler,
+  //   helper.apiKeyHandler,
+  helper.errorHandler,
   helper.handlerWrapper(async (req, res, next) => {
     const region = req.body;
     const session = new Session();
     const regionSerivce = new RegionService(session);
-    const newRegion = await regionSerivce.createRegion(region)
+    const newRegion = await regionSerivce.createRegion(region);
     res.status(200).json({
       region: newRegion,
     });
@@ -53,17 +53,17 @@ regionRouter.post(
 
 regionRouter.put(
   '/:regionId',
-  helper.apiKeyHandler,
-  helper.verifyJWTHandler,
+  //   helper.apiKeyHandler,
+  helper.errorHandler,
   helper.handlerWrapper(async (req, res, next) => {
     const { regionId } = req.params;
     const region = req.body;
-    region.id = regionId
+    region.id = regionId;
     const session = new Session();
     const regionSerivce = new RegionService(session);
-    const updatedRegion = await regionSerivce.updateRegion(region)
+    const updatedRegion = await regionSerivce.updateRegion(region);
     res.status(200).json({
-        region: updatedRegion
-    })
+      region: updatedRegion,
+    });
   }),
 );

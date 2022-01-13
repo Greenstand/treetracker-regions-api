@@ -1,6 +1,6 @@
-const expect = require("expect-runtime");
-const HttpError = require("../utils/HttpError");
-const BaseRepository = require("./BaseRepository")
+const expect = require('expect-runtime');
+const HttpError = require('../utils/HttpError');
+const BaseRepository = require('./BaseRepository');
 
 class RegionRepository extends BaseRepository {
   constructor(session) {
@@ -32,7 +32,7 @@ class RegionRepository extends BaseRepository {
     return result;
   }
 
-  async update(object) {
+  async updateRegion(object) {
     const result = await this._session
       .getDB()(this._tableName)
       .update(object)
@@ -47,4 +47,4 @@ class RegionRepository extends BaseRepository {
   }
 }
 
-module.exports = RegionRepository
+module.exports = RegionRepository;
