@@ -9,6 +9,7 @@ const regionRouter = require("./routes/regionRouter"); // create your router
 const {errorHandler} = require("./routes/utils");
 const log = require("loglevel");
 const helper = require("./routes/utils");
+const config = require('../config/config')
 
 const app = express();
 

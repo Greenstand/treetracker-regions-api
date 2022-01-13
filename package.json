@@ -39,6 +39,7 @@
     "express-async-handler": "^1.1.4",
     "express-validator": "^6.4.0",
     "geojson-validation": "^1.0.2",
+    "joi": "^17.5.0",
     "knex": "^0.95.12",
     "loglevel": "^1.6.8",
     "pg": "^8.3.0",

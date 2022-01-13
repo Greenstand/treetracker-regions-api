@@ -67,3 +67,5 @@ regionRouter.put(
     });
   }),
 );
+
+module.exports = regionRouter;
