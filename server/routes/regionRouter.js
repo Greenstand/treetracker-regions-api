@@ -8,7 +8,6 @@ const regionRouter = express.Router();
 regionRouter.get(
   '/',
   //   helper.apiKeyHandler,
-  helper.errorHandler,
   helper.handlerWrapper(async (req, res, next) => {
     const { ownerId } = req.query;
     const session = new Session();
@@ -24,7 +23,6 @@ regionRouter.get(
 regionRouter.get(
   '/:regionId',
   //   helper.apiKeyHandler,
-  helper.errorHandler,
   helper.handlerWrapper(async (req, res, next) => {
     const { regionId } = req.params;
     const session = new Session();
@@ -39,7 +37,6 @@ regionRouter.get(
 regionRouter.post(
   '/',
   //   helper.apiKeyHandler,
-  helper.errorHandler,
   helper.handlerWrapper(async (req, res, next) => {
     const region = req.body;
     const session = new Session();
@@ -54,7 +51,6 @@ regionRouter.post(
 regionRouter.put(
   '/:regionId',
   //   helper.apiKeyHandler,
-  helper.errorHandler,
   helper.handlerWrapper(async (req, res, next) => {
     const { regionId } = req.params;
     const region = req.body;
