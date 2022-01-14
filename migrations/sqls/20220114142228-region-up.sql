@@ -3,6 +3,7 @@ CREATE TABLE region
     (
         id uuid NOT NULL PRIMARY KEY,
         owner_id uuid NOT NULL,
+        collection_id uuid,
         name varchar NOT NULL,
         show_on_org_map boolean,
         calculate_statistics boolean,
