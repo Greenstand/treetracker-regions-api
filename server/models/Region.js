@@ -12,13 +12,32 @@ class Region {
             throw new HttpError(400, "Invalid upload.")
         }
         this.owner_id = JSON.ownerId || JSON.owner_id;
+        this.collection_id =
+          JSON.collectionId || JSON.collection_id ? JSON.collectionId || JSON.collection_id : null;
         this.name = JSON.name
         this.shape = JSON.shape
+        this.properties = JSON.properties || null
         this.show_on_org_map = JSON.showOnOrgMap || JSON.show_on_org_map
         this.calculate_statistics =
           JSON.calculateStatistics || JSON.calculate_statistics
         this.created_at = JSON.created_at || null
         this.updated_at = JSON.updated_at || null
+    }
+
+    toJSON() {
+      const JSON = {
+        id: this.id,
+        ownerId: this.owner_id,
+        collectionId: this.collection_id,
+        name: this.name,
+        shape: this.shape,
+        properties: this.properties,
+        showOnOrgMap: this.show_on_org_map,
+        calculateStatistics: this.calculate_statistics,
+        createdAt: this.created_at,
+        updatedAt: this.updated_at
+      }
+      return JSON
     }
 }
 
