@@ -16,6 +16,14 @@ class RegionService {
     return regions;
   }
 
+  async getAllByCollectionId(collectionId) {
+    const array = await this.regionRepository.getAllByCollectionId(
+      collectionId,
+    );
+    const regions = array.map((region) => new Region(region, this._session));
+    return regions;
+  }
+
   async getById(id) {
     const object = await this.regionRepository.getById(id);
     const region = new Region(object, this._session);
@@ -34,17 +42,20 @@ class RegionService {
       delete regionCollection.features;
       const newRegions = [];
       for (let i = 0; i < features.length; i += 1) {
-        const { coordinates: shape, properties } = features[i].geometry;
+        const { geometry: {coordinates: shape}, properties } = features[i];
         const object = new Region(
           {
             ...regionCollection,
             shape,
-            properties,
+            properties
           },
           this._session,
         );
-        const newRegion = await this.regionRepository.createRegion(object);
-        newRegions.push(newRegion);
+        const regionBeforeCreate = new Region(object, this._session);
+        const newRegion =
+          this.regionRepository.createRegion(regionBeforeCreate);
+        const regionAfterCreate = new Region(newRegion);
+        newRegions.push(regionAfterCreate);
       }
       result = newRegions;
     }
@@ -55,32 +66,34 @@ class RegionService {
       delete regionCollection.geometries;
       const newRegions = [];
       for (let i = 0; i < geometries.length; i += 1) {
-        const { coordinates: shape, properties } = geometries[i];
-        const object = new Region(
-          {
-            ...regionCollection,
-            shape,
-            properties,
-          },
-          this._session,
-        );
-        const newRegion = await this.regionRepository.createRegion(object);
-        newRegions.push(newRegion);
+        const { coordinates: shape } = geometries[i];
+        const object = {
+          ...regionCollection,
+          shape
+        };
+        const regionBeforeCreate = new Region(object, this._session);
+        const newRegion = this.regionRepository.createRegion(regionBeforeCreate);
+        const regionAfterCreate = new Region(newRegion);
+        newRegions.push(regionAfterCreate);
       }
       result = newRegions;
     }
     if (region.shape.type === 'Feature') {
       const object = region;
       object.properties = region.shape.properties;
-      object.shape = region.shape.coordinates;
-      const newRegion = new Region(object, this._session);
-      result = newRegion;
+      object.shape = region.shape.geometry.coordinates;
+      const regionBeforeCreate = new Region(object, this._session);
+      const newRegion = this.regionRepository.createRegion(regionBeforeCreate);
+      const regionAfterCreate = new Region(newRegion);
+      result = regionAfterCreate.toJSON();
     }
     if (region.shape.type === 'MultiPolygon') {
       const object = region;
       object.shape = region.shape.coordinates;
-      const newRegion = new Region(object, this._session);
-      result = newRegion;
+      const regionBeforeCreate = new Region(object, this._session);
+      const newRegion = this.regionRepository.createRegion(regionBeforeCreate)
+      const regionAfterCreate = new Region(newRegion)
+      result = regionAfterCreate.toJSON();
     }
     return result;
   }

@@ -24,6 +24,21 @@ class RegionRepository extends BaseRepository {
     return object;
   }
 
+  async getAllByCollectionId(collectionId) {
+    const object = await this._session
+      .getDB()
+      .select()
+      .table(this._tableName)
+      .where('collection_id', collectionId);
+    if (!object) {
+      throw new HttpError(
+        404,
+        `Can not find ${this._tableName} by id:${collectionId}`,
+      );
+    }
+    return object;
+  }
+
   async createRegion(object) {
     const result = await super.create(object);
     expect(result).match({
