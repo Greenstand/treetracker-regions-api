@@ -1,7 +1,7 @@
 const RegionRepository = require('../repositories/RegionRepository');
 const { v4: uuidv4 } = require('uuid');
 const Region = require('../models/Region');
-const gjv = require('geojson-validation');
+const {valid: gjv} = require('geojson-validation');
 const HttpError = require('../utils/HttpError');
 
 class RegionService {
@@ -12,7 +12,7 @@ class RegionService {
 
   async getAllByOwnerId(ownerId) {
     const array = await this.regionRepository.getAllByOwnerId(ownerId);
-    const regions = array.map((region) => new Region(region, this._session));
+    const regions = array.map((region) => new Region(region));
     return regions;
   }
 
@@ -20,13 +20,13 @@ class RegionService {
     const array = await this.regionRepository.getAllByCollectionId(
       collectionId,
     );
-    const regions = array.map((region) => new Region(region, this._session));
+    const regions = array.map((region) => new Region(region));
     return regions;
   }
 
   async getById(id) {
     const object = await this.regionRepository.getById(id);
-    const region = new Region(object, this._session);
+    const region = new Region(object);
     return region;
   }
 
@@ -48,12 +48,12 @@ class RegionService {
             ...regionCollection,
             shape,
             properties
-          },
-          this._session,
+          }
         );
-        const regionBeforeCreate = new Region(object, this._session);
-        const newRegion =
-          this.regionRepository.createRegion(regionBeforeCreate);
+        const regionBeforeCreate = new Region(object);
+        const newRegion = await this.regionRepository.createRegion(
+          regionBeforeCreate.rows[0],
+        );
         const regionAfterCreate = new Region(newRegion);
         newRegions.push(regionAfterCreate);
       }
@@ -71,8 +71,10 @@ class RegionService {
           ...regionCollection,
           shape
         };
-        const regionBeforeCreate = new Region(object, this._session);
-        const newRegion = this.regionRepository.createRegion(regionBeforeCreate);
+        const regionBeforeCreate = new Region(object);
+        const newRegion = await this.regionRepository.createRegion(
+          regionBeforeCreate.rows[0],
+        );
         const regionAfterCreate = new Region(newRegion);
         newRegions.push(regionAfterCreate);
       }
@@ -82,24 +84,26 @@ class RegionService {
       const object = region;
       object.properties = region.shape.properties;
       object.shape = region.shape.geometry.coordinates;
-      const regionBeforeCreate = new Region(object, this._session);
-      const newRegion = this.regionRepository.createRegion(regionBeforeCreate);
+      const regionBeforeCreate = new Region(object);
+      const newRegion = await this.regionRepository.createRegion(
+        regionBeforeCreate.rows[0],
+      );
       const regionAfterCreate = new Region(newRegion);
       result = regionAfterCreate.toJSON();
     }
     if (region.shape.type === 'MultiPolygon') {
       const object = region;
-      object.shape = region.shape.coordinates;
-      const regionBeforeCreate = new Region(object, this._session);
-      const newRegion = this.regionRepository.createRegion(regionBeforeCreate)
-      const regionAfterCreate = new Region(newRegion)
+      object.shape = region.shape;
+      const regionBeforeCreate = new Region(object);
+      const newRegion = await this.regionRepository.createRegion(regionBeforeCreate)
+      const regionAfterCreate = new Region(newRegion.rows[0]);
       result = regionAfterCreate.toJSON();
     }
     return result;
   }
 
   async updateRegion(region) {
-    const object = new Region(region, this._session);
+    const object = new Region(region);
     const updatedRegion = await this.regionRepository.updateRegion(
       object.toJSON(),
     );

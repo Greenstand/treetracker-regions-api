@@ -1,5 +1,5 @@
 function validateRegionUpload(regionObj) {
-  const { ownerId, name, show_on_org_map, calculate_statistics } =
+  const { ownerId, name, showOnOrgMap, calculateStatistics } =
     regionObj;
 
   if (!ownerId) {
@@ -14,11 +14,11 @@ function validateRegionUpload(regionObj) {
     return false;
   }
 
-  if (show_on_org_map && typeof show_on_org_map !== 'boolean') {
+  if (showOnOrgMap && typeof showOnOrgMap !== 'boolean') {
     return false;
   }
 
-  if (calculate_statistics && typeof calculate_statistics !== 'boolean') {
+  if (calculateStatistics && typeof calculateStatistics !== 'boolean') {
     return false;
   }
 

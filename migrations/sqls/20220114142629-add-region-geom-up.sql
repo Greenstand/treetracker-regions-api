@@ -2,7 +2,7 @@
 SELECT AddGeometryColumn (
     'public',
     'region',
-    'geom',
+    'shape',
     4326,
     'MULTIPOLYGON',
     2

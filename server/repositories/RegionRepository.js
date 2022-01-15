@@ -40,10 +40,37 @@ class RegionRepository extends BaseRepository {
   }
 
   async createRegion(object) {
-    const result = await super.create(object);
-    expect(result).match({
-      id: expect.any(String),
-    });
+    const {
+      calculate_statistics,
+      collection_id,
+      created_at,
+      id,
+      name,
+      owner_id,
+      properties,
+      shape,
+      show_on_org_map,
+      updated_at,
+    } = object;
+    const result = await this._session.getDB().raw(`
+      INSERT INTO region (calculate_statistics, collection_id, created_at, id, name, owner_id, properties, shape, show_on_org_map, updated_at)
+      VALUES(
+        ${calculate_statistics},
+        ${collection_id},
+        '${created_at.getFullYear()}-${created_at.getMonth() + 1}-${created_at.getDate()} ${created_at.getHours()}:${created_at.getMinutes()}:${created_at.getSeconds()}',
+        '${id}',
+        '${name}',
+        '${owner_id}',
+        ${properties},
+        ST_TRANSFORM(ST_GeomFromGeoJSON('${JSON.stringify(shape)}'),4326),
+        ${show_on_org_map},
+        '${updated_at.getFullYear()}-${updated_at.getMonth() + 1}-${updated_at.getDate()} ${updated_at.getHours()}:${updated_at.getMinutes()}:${updated_at.getSeconds()}'
+      )
+      RETURNING *
+    `);
+    // expect(result).match({
+    //   id: expect.any(String),
+    // });
     return result;
   }
 
