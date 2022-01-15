@@ -5,7 +5,7 @@ const regionHandlerGet = async function (req, res, next) {
   const { ownerId } = req.query;
   const session = new Session();
   const regionSerivce = new RegionService(session);
-  const ownerRegions = regionSerivce.regionRepository.getAllByOwnerId(ownerId);
+  const ownerRegions = await regionSerivce.regionRepository.getAllByOwnerId(ownerId);
   res.status(200).json({
     regions: ownerRegions,
   });
@@ -15,7 +15,7 @@ const regionHandlerGetByRegionId = async function (req, res, next) {
   const { regionId } = req.params;
   const session = new Session();
   const regionSerivce = new RegionService(session);
-  const region = regionSerivce.getById(regionId);
+  const region = await regionSerivce.getById(regionId);
   res.status(200).json({
     region,
   });
