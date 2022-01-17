@@ -75,17 +75,36 @@ class RegionRepository extends BaseRepository {
   }
 
   async updateRegion(object) {
-    const result = await this._session
-      .getDB()(this._tableName)
-      .update(object)
-      .where('id', object.id)
-      .returning('*');
-    expect(result).match([
-      {
-        id: expect.any(String),
-      },
-    ]);
-    return result[0];
+    const {
+      calculate_statistics,
+      collection_id,
+      id,
+      name,
+      owner_id,
+      properties,
+      shape,
+      show_on_org_map,
+      updated_at
+    } = object;
+    const result = await this._session.getDB().raw(`
+      UPDATE region SET (calculate_statistics, collection_id, id, name, owner_id, properties, shape, show_on_org_map, updated_at) = (
+        ${calculate_statistics},
+        ${collection_id},
+        '${id}',
+        '${name}',
+        '${owner_id}',
+        ${properties},
+        ST_TRANSFORM(ST_GeomFromGeoJSON('${JSON.stringify(shape)}'),4326),
+        ${show_on_org_map},
+        '${updated_at.toISOString()}'
+      )
+      WHERE id = '${id}'
+      RETURNING *
+    `);
+    expect(result.rows[0]).match({
+      id: expect.any(String),
+    });
+    return result.rows[0];
   }
 }
 

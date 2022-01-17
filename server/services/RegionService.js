@@ -104,10 +104,11 @@ class RegionService {
 
   async updateRegion(region) {
     const object = new Region(region);
-    const updatedRegion = await this.regionRepository.updateRegion(
-      object.toJSON(),
+    const regionBeforeUpdate = await this.regionRepository.updateRegion(
+      object,
     );
-    return updatedRegion;
+    const regionAfterUpdate = new Region(regionBeforeUpdate);
+    return regionAfterUpdate.toJSON();
   }
 }
 
