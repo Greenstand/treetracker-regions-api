@@ -57,21 +57,21 @@ class RegionRepository extends BaseRepository {
       VALUES(
         ${calculate_statistics},
         ${collection_id},
-        '${created_at.getFullYear()}-${created_at.getMonth() + 1}-${created_at.getDate()} ${created_at.getHours()}:${created_at.getMinutes()}:${created_at.getSeconds()}',
+        '${created_at.toISOString()}',
         '${id}',
         '${name}',
         '${owner_id}',
         ${properties},
         ST_TRANSFORM(ST_GeomFromGeoJSON('${JSON.stringify(shape)}'),4326),
         ${show_on_org_map},
-        '${updated_at.getFullYear()}-${updated_at.getMonth() + 1}-${updated_at.getDate()} ${updated_at.getHours()}:${updated_at.getMinutes()}:${updated_at.getSeconds()}'
+        '${updated_at.toISOString()}'
       )
       RETURNING *
     `);
-    // expect(result).match({
-    //   id: expect.any(String),
-    // });
-    return result;
+    expect(result.rows[0]).match({
+      id: expect.any(String),
+    });
+    return result.rows[0];
   }
 
   async updateRegion(object) {

@@ -8,6 +8,6 @@ CREATE TABLE region
         properties jsonb,
         show_on_org_map boolean,
         calculate_statistics boolean,
-        created_at timestamp NOT NULL,
-        updated_at timestamp NOT NULL
+        created_at timestamptz NOT NULL,
+        updated_at timestamptz NOT NULL
     );

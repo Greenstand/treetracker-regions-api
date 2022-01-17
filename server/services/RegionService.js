@@ -20,14 +20,14 @@ class RegionService {
     const array = await this.regionRepository.getAllByCollectionId(
       collectionId,
     );
-    const regions = array.map((region) => new Region(region));
+    const regions = array.map((region) => new Region(region).toJSON());
     return regions;
   }
 
   async getById(id) {
     const object = await this.regionRepository.getById(id);
     const region = new Region(object);
-    return region;
+    return region.toJSON();
   }
 
   async createRegion(region) {
@@ -52,7 +52,7 @@ class RegionService {
         );
         const regionBeforeCreate = new Region(object);
         const newRegion = await this.regionRepository.createRegion(
-          regionBeforeCreate.rows[0],
+          regionBeforeCreate,
         );
         const regionAfterCreate = new Region(newRegion);
         newRegions.push(regionAfterCreate);
@@ -73,7 +73,7 @@ class RegionService {
         };
         const regionBeforeCreate = new Region(object);
         const newRegion = await this.regionRepository.createRegion(
-          regionBeforeCreate.rows[0],
+          regionBeforeCreate,
         );
         const regionAfterCreate = new Region(newRegion);
         newRegions.push(regionAfterCreate);
@@ -86,7 +86,7 @@ class RegionService {
       object.shape = region.shape.geometry.coordinates;
       const regionBeforeCreate = new Region(object);
       const newRegion = await this.regionRepository.createRegion(
-        regionBeforeCreate.rows[0],
+        regionBeforeCreate,
       );
       const regionAfterCreate = new Region(newRegion);
       result = regionAfterCreate.toJSON();
@@ -96,7 +96,7 @@ class RegionService {
       object.shape = region.shape;
       const regionBeforeCreate = new Region(object);
       const newRegion = await this.regionRepository.createRegion(regionBeforeCreate)
-      const regionAfterCreate = new Region(newRegion.rows[0]);
+      const regionAfterCreate = new Region(newRegion);
       result = regionAfterCreate.toJSON();
     }
     return result;
