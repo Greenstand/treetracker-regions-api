@@ -56,7 +56,7 @@ class RegionRepository extends BaseRepository {
       INSERT INTO region (calculate_statistics, collection_id, created_at, id, name, owner_id, properties, shape, show_on_org_map, updated_at)
       VALUES(
         ${calculate_statistics},
-        ${collection_id},
+        '${collection_id}',
         '${created_at.toISOString()}',
         '${id}',
         '${name}',
@@ -89,7 +89,7 @@ class RegionRepository extends BaseRepository {
     const result = await this._session.getDB().raw(`
       UPDATE region SET (calculate_statistics, collection_id, id, name, owner_id, properties, shape, show_on_org_map, updated_at) = (
         ${calculate_statistics},
-        ${collection_id},
+        '${collection_id}',
         '${id}',
         '${name}',
         '${owner_id}',
