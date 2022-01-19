@@ -10,10 +10,10 @@ class RegionService {
     this.regionRepository = new RegionRepository(session);
   }
 
-  async getAllByFilter(filter) {
-    const { filter: innerFilter, limit, offset } = filter;
+  async getAllByFilter(options) {
+    const { filter, limit, offset } = options;
     const array = await this.regionRepository.getAllByRegionFilter(
-      innerFilter,
+      filter,
       limit,
       offset,
     );

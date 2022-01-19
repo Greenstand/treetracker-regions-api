@@ -1,20 +1,23 @@
 const express = require('express');
 const { handlerWrapper } = require('../handlers/utils');
 const {
-  regionHandlerGet,
-  regionHandlerGetByRegionId,
-  regionHandlerPost,
-  regionHandlerPut,
-} = require('../handlers/regionHandler');
+  collectionHandlerGet,
+  collectionHandlerGetByCollectionId,
+  collectionHandlerPost,
+  collectionHandlerPut,
+} = require('../handlers/collectionHandler');
 
 const router = express.Router();
 
-router.get('/', handlerWrapper(regionHandlerGet));
+router.get('/', handlerWrapper(collectionHandlerGet));
 
-router.get('/:collectionId', handlerWrapper(regionHandlerGetByRegionId));
+router.get(
+  '/:collectionId',
+  handlerWrapper(collectionHandlerGetByCollectionId),
+);
 
-router.post('/', handlerWrapper(regionHandlerPost));
+router.post('/', handlerWrapper(collectionHandlerPost));
 
-router.put('/:collectionId', handlerWrapper(regionHandlerPut));
+router.put('/:collectionId', handlerWrapper(collectionHandlerPut));
 
 module.exports = router;

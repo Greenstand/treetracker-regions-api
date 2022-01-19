@@ -2,10 +2,10 @@ const Session = require('../models/Session');
 const RegionService = require('../services/RegionService');
 
 const regionHandlerGet = async function (req, res, next) {
-  const { filter } = req.query;
+  const { options } = req.query;
   const session = new Session();
   const regionSerivce = new RegionService(session);
-  const ownerRegions = await regionSerivce.getAllByFilter(filter);
+  const ownerRegions = await regionSerivce.getAllByFilter(options);
   res.status(200).json({
     regions: ownerRegions,
   });
@@ -15,11 +15,11 @@ const regionHandlerGetCount = async function (req, res, next) {
   const { filter } = req.query;
   const session = new Session();
   const regionSerivce = new RegionService(session);
-  const ownerRegions = await regionSerivce.countByFilter(
+  const ownerRegionsCount = await regionSerivce.countByFilter(
     filter,
   );
   res.status(200).json({
-    regions: ownerRegions,
+    count: ownerRegionsCount,
   });
 };
 

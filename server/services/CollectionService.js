@@ -3,6 +3,7 @@ const RegionRepository = require('../repositories/RegionRepository');
 const CollectionRepository = require('../repositories/CollectionRepository');
 const Collection = require('../models/Collection');
 const HttpError = require('../utils/HttpError');
+const Region = require('../models/Region');
 
 class CollectionService {
   constructor(session) {
@@ -11,10 +12,10 @@ class CollectionService {
     this.collectionRepository = new CollectionRepository(session);
   }
 
-  async getAllByFilter(filter) {
-    const { filter: innerFilter, limit, offset } = filter;
+  async getAllByFilter(options) {
+    const { filter, limit, offset } = options;
     const array = await this.collectionRepository.getAllByCollectionFilter(
-      innerFilter,
+      filter,
       limit,
       offset,
     );
@@ -50,26 +51,47 @@ class CollectionService {
     const collectionObject = await this.collectionRepository.create({
       collectionBeforeCreate,
     });
+    const newRegions = []
     const collectionAfterCreate = new Collection(collectionObject);
-    const shapes = collection.shape.features || collection.shape.geometries
-    const regions = []
-    for (let i = 0; i < shapes.length; i+=1) {
-        const {
-          coordinates: geoShape,
-          geometry: { coordinates: featureShape },
-          properties,
-        } = shapes[i];
-        let object;
-        if (geoShape) {
-            
-            break
-        } else if (featureShape) {
-
-            break
+    if (collection.shape.type === 'FeatureCollection') {
+        const shapes = collection.shape.features
+        for (let i = 0; i < shapes.length; i+=1) {
+            const {
+              geometry: { coordinates: shape },
+              properties,
+            } = shapes[i];
+            const object = {
+                ...collection,
+                collectionId: collectionAfterCreate.id,
+                name: properties[collection.nameKey],
+                shape
+            }
+            const regionBeforeCreate = new Region(object)
+            const newRegion = await this.regionRepository.createRegion(regionBeforeCreate)
+            const regionAfterCreate = new Region(newRegion)
+            newRegions.push(regionAfterCreate)
         }
-        
+    } else if (collection.shape.type === 'GeometryCollection') {
+        const shapes = collection.shape.geometries;
+        for (let i = 0; i < shapes.length; i += 1) {
+          const { coordinates: shape } = shapes[i];
+          const object = {
+            ...collection,
+            collectionId: collectionAfterCreate.id,
+            name: null,
+            shape,
+          };
+          const regionBeforeCreate = new Region(object);
+          const newRegion = await this.regionRepository.createRegion(
+            regionBeforeCreate,
+          );
+          const regionAfterCreate = new Region(newRegion);
+          newRegions.push(regionAfterCreate.toJSON());
+        }
+    } else {
+        throw new HttpError(400)
     }
-
+    return { collection: collectionAfterCreate.toJSON(), regions: newRegions };
   }
 }
 

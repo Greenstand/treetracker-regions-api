@@ -11,7 +11,17 @@ class Collection {
     } else {
       throw new HttpError(400, 'Invalid upload.');
     }
+    this.owner_id = JSON.ownerId || JSON.owner_id
     this.name = JSON.name
+  }
+
+  toJSON() {
+      const JSON = {
+          id: this.id,
+          ownerId: this.ownerId,
+          name: this.name
+      }
+      return JSON
   }
 }
 

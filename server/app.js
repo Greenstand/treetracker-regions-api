@@ -5,7 +5,8 @@ const asyncHandler = require('express-async-handler');
 const { check, validationResult } = require('express-validator');
 const { body } = require('express-validator');
 const HttpError = require("./utils/HttpError");
-const regionRouter = require("./routes/regionRoutes"); // create your router
+const regionRouter = require("./routes/regionRoutes");
+const collectionRounter = require("./routes/collectionRoutes") // create your router
 const {errorHandler} = require("./handlers/utils");
 const log = require("loglevel");
 const helper = require('./handlers/utils');
@@ -32,6 +33,7 @@ app.use(bodyParser.json()); // parse application/json
 
 //routers
 app.use('/region', regionRouter);
+app.use('collection', collectionRounter);
 
 //paths
 //app.get('/entity', asyncHandler(async (req, res, next) => {
