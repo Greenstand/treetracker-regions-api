@@ -10,19 +10,31 @@ class RegionService {
     this.regionRepository = new RegionRepository(session);
   }
 
-  async getAllByOwnerId(ownerId) {
-    const array = await this.regionRepository.getAllByOwnerId(ownerId);
-    const regions = array.map((region) => new Region(region));
-    return regions;
-  }
-
-  async getAllByCollectionId(collectionId) {
-    const array = await this.regionRepository.getAllByCollectionId(
-      collectionId,
+  async getAllByFilter(filter) {
+    const { filter: innerFilter, limit, offset } = filter;
+    const array = await this.regionRepository.getAllByRegionFilter(
+      innerFilter,
+      limit,
+      offset,
     );
     const regions = array.map((region) => new Region(region).toJSON());
     return regions;
   }
+
+  async countByFilter(filter) {
+    const regionCount = await this.regionRepository.countByFilter(
+      filter,
+    );
+    return regionCount
+  }
+
+  // async getAllByCollectionId(collectionId) {
+  //   const array = await this.regionRepository.getAllByCollectionId(
+  //     collectionId,
+  //   );
+  //   const regions = array.map((region) => new Region(region).toJSON());
+  //   return regions;
+  // }
 
   async getById(id) {
     const object = await this.regionRepository.getById(id);

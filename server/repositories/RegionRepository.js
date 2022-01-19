@@ -9,16 +9,18 @@ class RegionRepository extends BaseRepository {
     this._session = session;
   }
 
-  async getAllByOwnerId(ownerId) {
+  async getAllByRegionFilter(filter, limit, offset) {
     const object = await this._session
       .getDB()
       .select()
       .table(this._tableName)
-      .where('owner_id', ownerId);
+      .where(filter)
+      .limit(limit)
+      .offset(offset);
     if (!object) {
       throw new HttpError(
         404,
-        `Can not find ${this._tableName} by id:${ownerId}`,
+        `Can not find ${this._tableName} by filter:${filter}`,
       );
     }
     return object;
@@ -84,7 +86,7 @@ class RegionRepository extends BaseRepository {
       properties,
       shape,
       show_on_org_map,
-      updated_at
+      updated_at,
     } = object;
     const result = await this._session.getDB().raw(`
       UPDATE region SET (calculate_statistics, collection_id, id, name, owner_id, properties, shape, show_on_org_map, updated_at) = (

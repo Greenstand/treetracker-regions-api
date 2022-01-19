@@ -1,10 +1,10 @@
 const express = require('express');
-const { handlerWrapper } = require('./handlers/utils');
+const { handlerWrapper } = require('../handlers/utils');
 const {
   regionHandlerGet,
   regionHandlerGetByRegionId,
   regionHandlerPost,
-  regionHandlerPut,} = require('./handlers/regionHandler')
+  regionHandlerPut,} = require('../handlers/regionHandler')
 
 const router = express.Router();
 
