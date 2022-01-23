@@ -4,7 +4,7 @@ const {
   regionHandlerGet,
   regionHandlerGetByRegionId,
   regionHandlerPost,
-  regionHandlerPut,} = require('../handlers/regionHandler')
+  regionHandlerPatch,} = require('../handlers/regionHandler')
 
 const router = express.Router();
 
@@ -23,9 +23,6 @@ router.post(
   handlerWrapper(regionHandlerPost),
 );
 
-router.put(
-  '/:regionId',
-  handlerWrapper(regionHandlerPut),
-);
+router.patch('/:regionId', handlerWrapper(regionHandlerPatch));
 
 module.exports = router;

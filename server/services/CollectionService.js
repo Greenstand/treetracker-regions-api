@@ -13,11 +13,12 @@ class CollectionService {
   }
 
   async getAllByFilter(options) {
-    const { filter, limit, offset } = options;
+    const { filter, limit, offset, order } = options;
     const array = await this.collectionRepository.getAllByCollectionFilter(
       filter,
       limit,
       offset,
+      order
     );
     const collections = array.map((collection) => new Collection(collection));
     return collections;

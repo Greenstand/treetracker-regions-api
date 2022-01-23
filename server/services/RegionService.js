@@ -11,11 +11,12 @@ class RegionService {
   }
 
   async getAllByFilter(options) {
-    const { filter, limit, offset } = options;
+    const { filter, limit, offset, order } = options;
     const array = await this.regionRepository.getAllByRegionFilter(
       filter,
       limit,
       offset,
+      order,
     );
     const regions = array.map((region) => new Region(region).toJSON());
     return regions;

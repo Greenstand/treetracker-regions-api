@@ -8,21 +8,19 @@ class CollectionRepository extends BaseRepository {
     this._session = session;
   }
 
-  async getAllByCollectionFilter(filter) {
-    const { filter: innerFilter, limit, offset } = filter;
+  async getAllByCollectionFilter(filter, limit, offset, order) {
     const object = await this._session
       .getDB()
       .select()
       .table(this._tableName)
-      .where(innerFilter)
+      .where(filter)
       .limit(limit)
-      .offset(offset);
+      .offset(offset)
+      .orderBy(...order);
     if (!object) {
       throw new HttpError(
         404,
-        `Can not find ${this._tableName} by filter:${JSON.stringify(
-          innerFilter,
-        )}`,
+        `Can not find ${this._tableName} by filter:${JSON.stringify(filter)}`,
       );
     }
     return object;

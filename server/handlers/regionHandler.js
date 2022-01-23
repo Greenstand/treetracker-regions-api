@@ -45,7 +45,7 @@ const regionHandlerPost = async function (req, res, next) {
   });
 };
 
-const regionHandlerPut = async function (req, res, next) {
+const regionHandlerPatch = async function (req, res, next) {
   const { regionId } = req.params;
   const region = req.body;
   region.id = regionId;
@@ -62,5 +62,5 @@ module.exports = {
   regionHandlerGetCount,
   regionHandlerGetByRegionId,
   regionHandlerPost,
-  regionHandlerPut,
+  regionHandlerPatch,
 };
