@@ -64,7 +64,7 @@ class RegionRepository extends BaseRepository {
         '${id}',
         '${name}',
         '${owner_id}',
-        ${properties},
+        '${JSON.stringify(properties)}',
         ST_TRANSFORM(ST_GeomFromGeoJSON('${JSON.stringify(shape)}'),4326),
         ${show_on_org_map},
         '${updated_at.toISOString()}'

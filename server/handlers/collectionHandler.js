@@ -32,13 +32,12 @@ const collectionHandlerGetByCollectionId = async function (req, res) {
 const collectionHandlerPost = async function (req, res) {
     const {ownerId} = req.query;
     const collection = req.body;
+    console.log(collection)
     collection.ownerId = ownerId
     const session = new Session();
     const collectionService = new CollectionService(session);
     const newCollection = await collectionService.createCollection(collection);
-    res.status(200).json({
-        collection: newCollection
-    })
+    res.status(200).json(newCollection)
 }
 
 const collectionHandlerPut = async function (req, res) {

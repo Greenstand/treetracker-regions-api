@@ -49,24 +49,24 @@ class CollectionService {
       throw new HttpError(400, 'Invalid File Upload.');
     }
     const collectionBeforeCreate = new Collection(collection)
-    const collectionObject = await this.collectionRepository.create({
-      collectionBeforeCreate,
-    });
+    const collectionObject = await this.collectionRepository.create(collectionBeforeCreate);
     const newRegions = []
     const collectionAfterCreate = new Collection(collectionObject);
     if (collection.shape.type === 'FeatureCollection') {
         const shapes = collection.shape.features
         for (let i = 0; i < shapes.length; i+=1) {
             const {
-              geometry: { coordinates: shape },
+              geometry,
               properties,
             } = shapes[i];
             const object = {
-                ...collection,
-                collectionId: collectionAfterCreate.id,
-                name: properties[collection.nameKey],
-                shape
-            }
+              ...collection,
+              properties,
+              ownerId: collectionAfterCreate.owner_id,
+              collectionId: collectionAfterCreate.id,
+              name: properties[collection.nameKey],
+              shape: geometry,
+            };
             const regionBeforeCreate = new Region(object)
             const newRegion = await this.regionRepository.createRegion(regionBeforeCreate)
             const regionAfterCreate = new Region(newRegion)
@@ -75,9 +75,10 @@ class CollectionService {
     } else if (collection.shape.type === 'GeometryCollection') {
         const shapes = collection.shape.geometries;
         for (let i = 0; i < shapes.length; i += 1) {
-          const { coordinates: shape } = shapes[i];
+          const { coordinates: shape, properties } = shapes[i];
           const object = {
             ...collection,
+            properties, 
             collectionId: collectionAfterCreate.id,
             name: null,
             shape,
@@ -92,6 +93,7 @@ class CollectionService {
     } else {
         throw new HttpError(400)
     }
+    console.log(newRegions)
     return { collection: collectionAfterCreate.toJSON(), regions: newRegions };
   }
 }
