@@ -117,9 +117,16 @@ class RegionService {
 
   async updateRegion(region) {
     const object = new Region(region);
-    const regionBeforeUpdate = await this.regionRepository.updateRegion(
-      object,
-    );
+    console.log("region", region)
+    const regionBeforeUpdate = await this.regionRepository.update(
+      {
+        id: region.id,
+        name: region.name,
+        show_on_org_map: region.showOnOrgMap,
+        calculate_statistics: region.calculateStatistics
+      },
+      );
+      console.log('sql', regionBeforeUpdate);
     const regionAfterUpdate = new Region(regionBeforeUpdate);
     return regionAfterUpdate.toJSON();
   }

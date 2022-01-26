@@ -5,19 +5,16 @@ const regionHandlerGet = async function (req, res, next) {
   const { options } = req.query;
   const session = new Session();
   const regionSerivce = new RegionService(session);
-  const ownerRegions = await regionSerivce.getAllByFilter(options);
-  res.status(200).json({
-    regions: ownerRegions,
-  });
+  const ownerRegions = await regionSerivce.getAllByFilter(JSON.parse(options));
+  console.log(ownerRegions)
+  res.status(200).json(ownerRegions);
 };
 
 const regionHandlerGetCount = async function (req, res, next) {
   const { filter } = req.query;
   const session = new Session();
   const regionSerivce = new RegionService(session);
-  const ownerRegionsCount = await regionSerivce.countByFilter(
-    filter,
-  );
+  const ownerRegionsCount = await regionSerivce.countByFilter(JSON.parse(filter));
   res.status(200).json({
     count: ownerRegionsCount,
   });

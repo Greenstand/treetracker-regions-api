@@ -100,7 +100,7 @@ class BaseRepository {
       .returning('*');
     expect(result).match([
       {
-        id: expect.any(Number),
+        id: expect.any(String),
       },
     ]);
     return result[0];

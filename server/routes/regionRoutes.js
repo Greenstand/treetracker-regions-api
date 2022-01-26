@@ -4,7 +4,8 @@ const {
   regionHandlerGet,
   regionHandlerGetByRegionId,
   regionHandlerPost,
-  regionHandlerPatch,} = require('../handlers/regionHandler')
+  regionHandlerPatch,
+  regionHandlerGetCount,} = require('../handlers/regionHandler')
 
 const router = express.Router();
 
@@ -12,6 +13,8 @@ router.get(
   '/',
   handlerWrapper(regionHandlerGet),
 );
+
+router.get('/count', handlerWrapper(regionHandlerGetCount));
 
 router.get(
   '/:regionId',
