@@ -6,7 +6,6 @@ const regionHandlerGet = async function (req, res, next) {
   const session = new Session();
   const regionSerivce = new RegionService(session);
   const ownerRegions = await regionSerivce.getAllByFilter(JSON.parse(options));
-  console.log(ownerRegions)
   res.status(200).json(ownerRegions);
 };
 

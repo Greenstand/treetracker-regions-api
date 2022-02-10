@@ -51,6 +51,7 @@ class CollectionService {
     const collectionBeforeCreate = new Collection(collection)
     const collectionObject = await this.collectionRepository.create(collectionBeforeCreate);
     const newRegions = []
+    const regionsBeforeCreate = []
     const collectionAfterCreate = new Collection(collectionObject);
     if (collection.shape.type === 'FeatureCollection') {
         const shapes = collection.shape.features
@@ -68,9 +69,7 @@ class CollectionService {
               shape: geometry,
             };
             const regionBeforeCreate = new Region(object)
-            const newRegion = await this.regionRepository.createRegion(regionBeforeCreate)
-            const regionAfterCreate = new Region(newRegion)
-            newRegions.push(regionAfterCreate)
+            regionsBeforeCreate.push(regionBeforeCreate)
         }
     } else if (collection.shape.type === 'GeometryCollection') {
         const shapes = collection.shape.geometries;
@@ -84,17 +83,18 @@ class CollectionService {
             shape,
           };
           const regionBeforeCreate = new Region(object);
-          const newRegion = await this.regionRepository.createRegion(
-            regionBeforeCreate,
-          );
-          const regionAfterCreate = new Region(newRegion);
-          newRegions.push(regionAfterCreate.toJSON());
+          regionsBeforeCreate.push(regionBeforeCreate);
         }
     } else {
         throw new HttpError(400)
     }
-    console.log(newRegions)
-    return { collection: collectionAfterCreate.toJSON(), regions: newRegions };
+    const regionsAfterCreate = await this.regionRepository.createRegions(regionsBeforeCreate)
+    const regions = regionsAfterCreate.map((region) => new Region(region));
+    // console.log(regionsAfterCreate);
+    return {
+      collection: collectionAfterCreate.toJSON(),
+      regions,
+    };
   }
 }
 
