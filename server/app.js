@@ -5,10 +5,12 @@ const asyncHandler = require('express-async-handler');
 const { check, validationResult } = require('express-validator');
 const { body } = require('express-validator');
 const HttpError = require("./utils/HttpError");
-//const walletRouter = require("./routes/entityRouter"); // create your router
-const {errorHandler} = require("./routes/utils");
+const regionRouter = require("./routes/regionRoutes");
+const collectionRounter = require("./routes/collectionRoutes") // create your router
+const {errorHandler} = require("./handlers/utils");
 const log = require("loglevel");
-const helper = require("./routes/utils");
+const helper = require('./handlers/utils');
+const config = require('../config/config')
 
 const app = express();
 
@@ -30,7 +32,8 @@ app.use(bodyParser.urlencoded({ extended: false })); // parse application/x-www-
 app.use(bodyParser.json()); // parse application/json
 
 //routers
-//app.use('/entity', entityRouter);
+app.use('/region', regionRouter);
+app.use('collection', collectionRounter);
 
 //paths
 //app.get('/entity', asyncHandler(async (req, res, next) => {
