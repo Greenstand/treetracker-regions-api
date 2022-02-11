@@ -1,3 +1,11 @@
+## [1.0.2](https://github.com/Greenstand/treetracker-regions-api/compare/v1.0.1...v1.0.2) (2022-02-11)
+
+
+### Bug Fixes
+
+* move migrations to the right folder ([75b8307](https://github.com/Greenstand/treetracker-regions-api/commit/75b8307107194a79f08144b481209b4fd1ac5b3b))
+* wrong name for database secret ([471f23e](https://github.com/Greenstand/treetracker-regions-api/commit/471f23e633926e1854474e406a40103f1f81a35b))
+
 ## [1.0.1](https://github.com/Greenstand/treetracker-regions-api/compare/v1.0.0...v1.0.1) (2022-02-11)
 
 
