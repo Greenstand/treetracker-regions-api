@@ -1,5 +1,5 @@
 const { v4: uuidv4 } = require('uuid');
-const {valid: gjv} = require('geojson-validation');
+const { valid: gjv } = require('geojson-validation');
 const RegionRepository = require('../repositories/RegionRepository');
 const Region = require('../models/Region');
 const HttpError = require('../utils/HttpError');
@@ -23,10 +23,8 @@ class RegionService {
   }
 
   async countByFilter(filter) {
-    const regionCount = await this.regionRepository.countByFilter(
-      filter,
-    );
-    return regionCount
+    const regionCount = await this.regionRepository.countByFilter(filter);
+    return regionCount;
   }
 
   // async getAllByCollectionId(collectionId) {
@@ -55,14 +53,15 @@ class RegionService {
       delete regionCollection.features;
       const newRegions = [];
       for (let i = 0; i < features.length; i += 1) {
-        const { geometry: {coordinates: shape}, properties } = features[i];
-        const object = new Region(
-          {
-            ...regionCollection,
-            shape,
-            properties
-          }
-        );
+        const {
+          geometry: { coordinates: shape },
+          properties,
+        } = features[i];
+        const object = new Region({
+          ...regionCollection,
+          shape,
+          properties,
+        });
         const regionBeforeCreate = new Region(object);
         const newRegion = await this.regionRepository.createRegion(
           regionBeforeCreate,
@@ -82,7 +81,7 @@ class RegionService {
         const { coordinates: shape } = geometries[i];
         const object = {
           ...regionCollection,
-          shape
+          shape,
         };
         const regionBeforeCreate = new Region(object);
         const newRegion = await this.regionRepository.createRegion(
@@ -108,7 +107,9 @@ class RegionService {
       const object = region;
       object.shape = region.shape;
       const regionBeforeCreate = new Region(object);
-      const newRegion = await this.regionRepository.createRegion(regionBeforeCreate)
+      const newRegion = await this.regionRepository.createRegion(
+        regionBeforeCreate,
+      );
       const regionAfterCreate = new Region(newRegion);
       result = regionAfterCreate.toJSON();
     }
@@ -117,16 +118,14 @@ class RegionService {
 
   async updateRegion(region) {
     const object = new Region(region);
-    console.log("region", region)
-    const regionBeforeUpdate = await this.regionRepository.update(
-      {
-        id: region.id,
-        name: region.name,
-        show_on_org_map: region.showOnOrgMap,
-        calculate_statistics: region.calculateStatistics
-      },
-      );
-      console.log('sql', regionBeforeUpdate);
+    console.log('region', region);
+    const regionBeforeUpdate = await this.regionRepository.update({
+      id: region.id,
+      name: region.name,
+      show_on_org_map: region.showOnOrgMap,
+      calculate_statistics: region.calculateStatistics,
+    });
+    console.log('sql', regionBeforeUpdate);
     const regionAfterUpdate = new Region(regionBeforeUpdate);
     return regionAfterUpdate.toJSON();
   }

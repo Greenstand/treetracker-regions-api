@@ -96,19 +96,20 @@ class RegionRepository extends BaseRepository {
   }
 
   async createRegions(array) {
-    const values = array.reduce((prev, cur, i, array) => {const {
-      calculate_statistics,
-      collection_id,
-      created_at,
-      id,
-      name,
-      owner_id,
-      properties,
-      shape,
-      show_on_org_map,
-      updated_at,
-    } = cur;
-    return `${prev}
+    const values = array.reduce((prev, cur, i, array) => {
+      const {
+        calculate_statistics,
+        collection_id,
+        created_at,
+        id,
+        name,
+        owner_id,
+        properties,
+        shape,
+        show_on_org_map,
+        updated_at,
+      } = cur;
+      return `${prev}
     (
         ${calculate_statistics},
         '${collection_id}',
@@ -120,8 +121,8 @@ class RegionRepository extends BaseRepository {
         ST_TRANSFORM(ST_GeomFromGeoJSON('${JSON.stringify(shape)}'),4326),
         ${show_on_org_map},
         '${updated_at.toISOString()}'
-      )${i < array.length - 1 ? ',' : ''}`
-    }, "")
+      )${i < array.length - 1 ? ',' : ''}`;
+    }, '');
     const result = await this._session.getDB().raw(`
       INSERT INTO region (calculate_statistics, collection_id, created_at, id, name, owner_id, properties, shape, show_on_org_map, updated_at)
       VALUES ${values}
@@ -130,7 +131,7 @@ class RegionRepository extends BaseRepository {
     expect(result.rows[0]).match({
       id: expect.any(String),
     });
-    return result.rows
+    return result.rows;
   }
 
   async updateRegion(object) {

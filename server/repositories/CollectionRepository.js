@@ -1,4 +1,4 @@
-
+const HttpError = require('../utils/HttpError');
 const BaseRepository = require('./BaseRepository');
 
 class CollectionRepository extends BaseRepository {

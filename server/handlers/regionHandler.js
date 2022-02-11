@@ -13,7 +13,9 @@ const regionHandlerGetCount = async function (req, res, next) {
   const { filter } = req.query;
   const session = new Session();
   const regionSerivce = new RegionService(session);
-  const ownerRegionsCount = await regionSerivce.countByFilter(JSON.parse(filter));
+  const ownerRegionsCount = await regionSerivce.countByFilter(
+    JSON.parse(filter),
+  );
   res.status(200).json({
     count: ownerRegionsCount,
   });

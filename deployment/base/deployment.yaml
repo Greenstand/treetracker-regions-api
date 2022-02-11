@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: treetracker-regions-api
   labels:
-    app: treetracker-regions-api 
+    app: treetracker-regions-api
 spec:
   replicas: 1
   selector:
@@ -18,24 +18,24 @@ spec:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
             nodeSelectorTerms:
-            - matchExpressions:
-              - key: doks.digitalocean.com/node-pool
-                operator: In
-                values:
-                - default-node-pool
-                - microservices-node-pool
+              - matchExpressions:
+                  - key: doks.digitalocean.com/node-pool
+                    operator: In
+                    values:
+                      - default-node-pool
+                      - microservices-node-pool
       containers:
-      - name: treetracker-regions-api
-        image: greenstand/treetracker-regions-api:TAG
-        ports:
-        - containerPort: 80
-        env:
-          - name: DATABASE_URL
-            valueFrom:
-              secretKeyRef:
-                name: treetracker-database-connection
-                key: db
-          - name: DATABASE_SCHEMA
-            value: messaging
+        - name: treetracker-regions-api
+          image: greenstand/treetracker-regions-api:TAG
+          ports:
+            - containerPort: 80
+          env:
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: treetracker-database-connection
+                  key: db
+            - name: DATABASE_SCHEMA
+              value: messaging
       imagePullSecrets:
         - name: greenstand-docker-secret
