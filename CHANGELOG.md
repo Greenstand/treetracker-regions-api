@@ -1,3 +1,10 @@
+## [1.0.1](https://github.com/Greenstand/treetracker-regions-api/compare/v1.0.0...v1.0.1) (2022-02-11)
+
+
+### Bug Fixes
+
+* namespace and filenames ([84cb522](https://github.com/Greenstand/treetracker-regions-api/commit/84cb52209b495bb1db62bcc298ca4db99ed27072))
+
 # 1.0.0 (2022-02-11)
 
 
