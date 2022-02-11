@@ -1,18 +1,18 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: SERVICE
+  name: treetracker-regions-api
   labels:
-    app: SERVICE 
+    app: treetracker-regions-api 
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: SERVICE
+      app: treetracker-regions-api
   template:
     metadata:
       labels:
-        app: SERVICE
+        app: treetracker-regions-api
     spec:
       affinity:
         nodeAffinity:
@@ -22,10 +22,11 @@ spec:
               - key: doks.digitalocean.com/node-pool
                 operator: In
                 values:
+                - default-node-pool
                 - microservices-node-pool
       containers:
-      - name: SERVICE
-        image: greenstand/SERVICE:TAG
+      - name: treetracker-regions-api
+        image: greenstand/treetracker-regions-api:TAG
         ports:
         - containerPort: 80
         env:

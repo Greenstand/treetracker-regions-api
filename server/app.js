@@ -4,11 +4,11 @@ const bodyParser = require('body-parser');
 const asyncHandler = require('express-async-handler');
 const { check, validationResult } = require('express-validator');
 const { body } = require('express-validator');
+const log = require("loglevel");
 const HttpError = require("./utils/HttpError");
 const regionRouter = require("./routes/regionRoutes");
 const collectionRounter = require("./routes/collectionRoutes") // create your router
 const {errorHandler} = require("./handlers/utils");
-const log = require("loglevel");
 const helper = require('./handlers/utils');
 const config = require('../config/config')
 
@@ -31,19 +31,20 @@ app.use(helper.handlerWrapper(async (req, _res, next) => {
 app.use(bodyParser.urlencoded({ extended: false })); // parse application/x-www-form-urlencoded
 app.use(bodyParser.json()); // parse application/json
 
-//routers
+// routers
 app.use('/region', regionRouter);
 app.use('collection', collectionRounter);
 
-//paths
-//app.get('/entity', asyncHandler(async (req, res, next) => {
+// paths
+// app.get('/entity', asyncHandler(async (req, res, next) => {
 //
-//}));
+// }));
 
 // Global error handler
 app.use(errorHandler);
 
-const version = require('../package.json').version
+const {version} = require('../package.json')
+
 app.get('*',function (req, res) {
   res.status(200).send(version)
 });

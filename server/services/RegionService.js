@@ -1,7 +1,7 @@
-const RegionRepository = require('../repositories/RegionRepository');
 const { v4: uuidv4 } = require('uuid');
-const Region = require('../models/Region');
 const {valid: gjv} = require('geojson-validation');
+const RegionRepository = require('../repositories/RegionRepository');
+const Region = require('../models/Region');
 const HttpError = require('../utils/HttpError');
 
 class RegionService {
