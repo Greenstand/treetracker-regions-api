@@ -20,11 +20,13 @@ class Region {
     this.shape = JSON.shape;
     this.properties = JSON.properties || null;
     this.show_on_org_map =
-      JSON.showOnOrgMap || JSON.show_on_org_map
+      typeof JSON.showOnOrgMap === 'boolean' ||
+      typeof JSON.show_on_org_map === 'boolean'
         ? JSON.showOnOrgMap || JSON.show_on_org_map
         : null;
     this.calculate_statistics =
-      JSON.calculateStatistics || JSON.calculate_statistics
+      typeof JSON.calculateStatistics === 'boolean' ||
+      typeof JSON.calculate_statistics === 'boolean'
         ? JSON.calculateStatistics || JSON.calculate_statistics
         : null;
     this.created_at =

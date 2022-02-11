@@ -18,7 +18,7 @@ class CollectionService {
       filter,
       limit,
       offset,
-      order
+      order,
     );
     const collections = array.map((collection) => new Collection(collection));
     return collections;
@@ -38,64 +38,65 @@ class CollectionService {
   }
 
   async updateCollection(collection) {
-      const collectionBeforeUpdate = new Collection(collection);
-      const object = await this.updateCollection(collectionBeforeUpdate);
-      const collectionAfterUpdate = new Collection(object)
-      return collectionAfterUpdate
+    const collectionBeforeUpdate = new Collection(collection);
+    const object = await this.updateCollection(collectionBeforeUpdate);
+    const collectionAfterUpdate = new Collection(object);
+    return collectionAfterUpdate;
   }
 
   async createCollection(collection) {
     if (!gjv(collection.shape)) {
       throw new HttpError(400, 'Invalid File Upload.');
     }
-    const collectionBeforeCreate = new Collection(collection)
-    const collectionObject = await this.collectionRepository.create(collectionBeforeCreate);
-    const newRegions = []
+    const collectionBeforeCreate = new Collection(collection);
+    const collectionObject = await this.collectionRepository.create(
+      collectionBeforeCreate,
+    );
+    const newRegions = [];
+    const regionsBeforeCreate = [];
     const collectionAfterCreate = new Collection(collectionObject);
     if (collection.shape.type === 'FeatureCollection') {
-        const shapes = collection.shape.features
-        for (let i = 0; i < shapes.length; i+=1) {
-            const {
-              geometry,
-              properties,
-            } = shapes[i];
-            const object = {
-              ...collection,
-              properties,
-              ownerId: collectionAfterCreate.owner_id,
-              collectionId: collectionAfterCreate.id,
-              name: properties[collection.nameKey],
-              shape: geometry,
-            };
-            const regionBeforeCreate = new Region(object)
-            const newRegion = await this.regionRepository.createRegion(regionBeforeCreate)
-            const regionAfterCreate = new Region(newRegion)
-            newRegions.push(regionAfterCreate)
-        }
+      const shapes = collection.shape.features;
+      for (let i = 0; i < shapes.length; i += 1) {
+        const { geometry, properties } = shapes[i];
+        const object = {
+          ...collection,
+          properties,
+          ownerId: collectionAfterCreate.owner_id,
+          collectionId: collectionAfterCreate.id,
+          name: properties[collection.nameKey],
+          shape: geometry,
+        };
+        const regionBeforeCreate = new Region(object);
+        regionsBeforeCreate.push(regionBeforeCreate);
+      }
     } else if (collection.shape.type === 'GeometryCollection') {
-        const shapes = collection.shape.geometries;
-        for (let i = 0; i < shapes.length; i += 1) {
-          const { coordinates: shape, properties } = shapes[i];
-          const object = {
-            ...collection,
-            properties, 
-            collectionId: collectionAfterCreate.id,
-            name: null,
-            shape,
-          };
-          const regionBeforeCreate = new Region(object);
-          const newRegion = await this.regionRepository.createRegion(
-            regionBeforeCreate,
-          );
-          const regionAfterCreate = new Region(newRegion);
-          newRegions.push(regionAfterCreate.toJSON());
-        }
+      const shapes = collection.shape.geometries;
+      for (let i = 0; i < shapes.length; i += 1) {
+        const { coordinates: shape, properties } = shapes[i];
+        const object = {
+          ...collection,
+          properties,
+          collectionId: collectionAfterCreate.id,
+          name: null,
+          shape,
+        };
+        const regionBeforeCreate = new Region(object);
+        regionsBeforeCreate.push(regionBeforeCreate);
+      }
     } else {
-        throw new HttpError(400)
+      throw new HttpError(400);
     }
-    console.log(newRegions)
-    return { collection: collectionAfterCreate.toJSON(), regions: newRegions };
+    const regionsAfterCreate = await this.regionRepository.createRegions(
+      regionsBeforeCreate,
+    );
+    const regions = regionsAfterCreate.map((region) => new Region(region));
+    // console.log(regionsAfterCreate);
+    return {
+      collection: collectionAfterCreate.toJSON(),
+      regions,
+    };
   }
 }
 
-module.exports = CollectionService
+module.exports = CollectionService;

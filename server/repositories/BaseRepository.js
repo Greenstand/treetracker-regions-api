@@ -1,6 +1,6 @@
-const expect = require("expect-runtime");
-const Session = require("../models/Session");
-const HttpError = require("../utils/HttpError");
+const expect = require('expect-runtime');
+const Session = require('../models/Session');
+const HttpError = require('../utils/HttpError');
 
 class BaseRepository {
   constructor(tableName, session) {
