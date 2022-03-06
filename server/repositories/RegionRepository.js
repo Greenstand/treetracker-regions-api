@@ -143,7 +143,9 @@ class RegionRepository extends BaseRepository {
       properties: JSON.stringify(properties),
       show_on_org_map,
       updated_at: updated_at.toISOString()
-    }).returning('*');
+    })
+    .where({id})
+    .returning('*');
 
     expect(result.rows[0]).match({
       id: expect.any(String),
