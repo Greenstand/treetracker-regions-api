@@ -32,9 +32,9 @@ const regionHandlerGetByRegionId = async function (req, res, next) {
 };
 
 const regionHandlerPost = async function (req, res, next) {
-  const { ownerId } = req.query;
+  const { owner_id } = req.query;
   const region = req.body;
-  region.ownerId = ownerId;
+  region.ownerId = owner_id;
   const session = new Session();
   const regionSerivce = new RegionService(session);
   const newRegion = await regionSerivce.createRegion(region);
