@@ -1,48 +1,45 @@
 const expect = require('expect-runtime');
-const res = require('express/lib/response');
+const knexPostgis = require('knex-postgis');
 const HttpError = require('../utils/HttpError');
 const BaseRepository = require('./BaseRepository');
-
 class RegionRepository extends BaseRepository {
   constructor(session) {
     super('region', session);
-    this._tableName = 'region';
-    this._session = session;
   }
 
   async getAllByRegionFilter(filter, limit, offset, order) {
-    const result = await this._session.getDB().raw(`
-    SELECT 
-    calculate_statistics, 
-    collection_id, 
-    created_at, 
-    id, 
-    name, 
-    owner_id, 
-    properties, 
-    ST_AsGeoJSON(shape), 
-    show_on_org_map, 
-    updated_at 
-    FROM 
-    region
-    WHERE 
-    calculate_statistics = ${filter.calculateStatistics}, 
-    collection_id = ${filter.collectionId}, 
-    id = ${filter.id}, 
-    name = ${filter.name}, 
-    owner_id = ${filter.ownerId}, 
-    show_on_org_map = ${filter.showOnOrgMap}
-    LIMIT ${limit}
-    OFFSET ${offset}
-    ORDER BY ${order[0]} ${order[1]}
-    `);
-    if (!result) {
-      throw new HttpError(
-        404,
-        `Can not find ${this._tableName} by filter:${filter}`,
-      );
+
+    const knex = this._session.getDB();
+    const st = knexPostgis(knex);
+    let promise = knex
+      .select(
+        'calculate_statistics',
+        'collection_id',
+        'created_at',
+        'id', 
+        'name', 
+        'owner_id', 
+        'properties', 
+        st.asGeoJSON('shape'),
+        'show_on_org_map',
+        'updated_at')
+      .table(this._tableName)
+      .where((builder) => this.whereBuilder(filter, builder));
+
+    promise = promise.orderBy(
+      order?.[0] || 'name',
+      order?.[1] || 'asc',
+    );
+
+    if (limit) {
+      promise = promise.limit(limit);
     }
-    return result;
+    if (offset) {
+      promise = promise.offset(offset);
+    }
+  
+    const regions = await promise;
+    return regions;
   }
 
   async getAllByCollectionId(collectionId) {
@@ -61,6 +58,7 @@ class RegionRepository extends BaseRepository {
   }
 
   async createRegion(object) {
+    const st = knexPostgis(this._session.getDB());
     const {
       calculate_statistics,
       collection_id,
@@ -73,22 +71,20 @@ class RegionRepository extends BaseRepository {
       show_on_org_map,
       updated_at,
     } = object;
-    const result = await this._session.getDB().raw(`
-      INSERT INTO region (calculate_statistics, collection_id, created_at, id, name, owner_id, properties, shape, show_on_org_map, updated_at)
-      VALUES(
-        ${calculate_statistics},
-        '${collection_id}',
-        '${created_at.toISOString()}',
-        '${id}',
-        '${name}',
-        '${owner_id}',
-        '${JSON.stringify(properties)}',
-        ST_TRANSFORM(ST_GeomFromGeoJSON('${JSON.stringify(shape)}'),4326),
-        ${show_on_org_map},
-        '${updated_at.toISOString()}'
-      )
-      RETURNING *
-    `);
+
+    const result = await this._session.getDB().table(this._tableName).insert({
+      calculate_statistics,
+      collection_id,
+      created_at: created_at.toISOString(),
+      id,
+      name,
+      owner_id,
+      properties: JSON.stringify(properties),
+      shape: st.transform(st.geomFromGeoJSON(JSON.stringify(shape)),4326),
+      show_on_org_map,
+      updated_at: updated_at.toISOString()
+    }).returning('*');
+
     expect(result.rows[0]).match({
       id: expect.any(String),
     });
@@ -96,38 +92,31 @@ class RegionRepository extends BaseRepository {
   }
 
   async createRegions(array) {
-    const values = array.reduce((prev, cur, i, array) => {
-      const {
-        calculate_statistics,
-        collection_id,
-        created_at,
-        id,
-        name,
-        owner_id,
-        properties,
-        shape,
-        show_on_org_map,
-        updated_at,
-      } = cur;
-      return `${prev}
-    (
-        ${calculate_statistics},
-        '${collection_id}',
-        '${created_at.toISOString()}',
-        '${id}',
-        '${name}',
-        '${owner_id}',
-        '${JSON.stringify(properties)}',
-        ST_TRANSFORM(ST_GeomFromGeoJSON('${JSON.stringify(shape)}'),4326),
-        ${show_on_org_map},
-        '${updated_at.toISOString()}'
-      )${i < array.length - 1 ? ',' : ''}`;
-    }, '');
-    const result = await this._session.getDB().raw(`
-      INSERT INTO region (calculate_statistics, collection_id, created_at, id, name, owner_id, properties, shape, show_on_org_map, updated_at)
-      VALUES ${values}
-      RETURNING *
-    `);
+    const st = knexPostgis(this._session.getDB());
+    const result = await this._session.getDB().table(this._tableName).insert(array.map(({
+      calculate_statistics,
+      collection_id,
+      created_at,
+      id,
+      name,
+      owner_id,
+      properties,
+      shape,
+      show_on_org_map,
+      updated_at,
+    }) => ({
+      calculate_statistics,
+      collection_id,
+      created_at: created_at.toISOString(),
+      id,
+      name,
+      owner_id,
+      properties: JSON.stringify(properties),
+      shape: st.transform(st.geomFromGeoJSON(shape),4326),
+      show_on_org_map,
+      updated_at: updated_at.toISOString()
+    }))).returning('*');
+
     expect(result.rows[0]).match({
       id: expect.any(String),
     });
@@ -145,20 +134,17 @@ class RegionRepository extends BaseRepository {
       show_on_org_map,
       updated_at,
     } = object;
-    const result = await this._session.getDB().raw(`
-      UPDATE region SET (calculate_statistics, collection_id, id, name, owner_id, properties, show_on_org_map, updated_at) = (
-        ${calculate_statistics},
-        '${collection_id}',
-        '${id}',
-        '${name}',
-        '${owner_id}',
-        '${JSON.stringify(properties)}',
-        ${show_on_org_map},
-        '${updated_at.toISOString()}'
-      )
-      WHERE id = '${id}'
-      RETURNING *
-    `);
+    const result = await this._session.getDB().table(this._tableName).insert({
+      calculate_statistics,
+      collection_id,
+      id,
+      name,
+      owner_id,
+      properties: JSON.stringify(properties),
+      show_on_org_map,
+      updated_at: updated_at.toISOString()
+    }).returning('*');
+
     expect(result.rows[0]).match({
       id: expect.any(String),
     });
