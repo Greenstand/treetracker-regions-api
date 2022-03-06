@@ -22,6 +22,48 @@ class BaseRepository {
     return object;
   }
 
+  // eslint-disable-next-line class-methods-use-this
+  whereBuilder(object, builder) {
+    let result = builder;
+    if (object.and) {
+      expect(Object.keys(object)).lengthOf(1);
+      expect(object.and).a(expect.any(Array));
+      
+      // eslint-disable-next-line no-restricted-syntax
+      for (const one of object.and) {
+        if (one.or) {
+          result = result.andWhere((subBuilder) =>
+            this.whereBuilder(one, subBuilder),
+          );
+        } else {
+          expect(Object.keys(one)).lengthOf(1);
+          result = result.andWhere(
+            Object.keys(one)[0],
+            Object.values(one)[0],
+          );
+        }
+      }
+    } else if (object.or) {
+      expect(Object.keys(object)).lengthOf(1);
+      expect(object.or).a(expect.any(Array));
+
+      // eslint-disable-next-line no-restricted-syntax
+      for (const one of object.or) {
+        if (one.and) {
+          result = result.orWhere((subBuilder) =>
+            this.whereBuilder(one, subBuilder),
+          );
+        } else {
+          expect(Object.keys(one)).lengthOf(1);
+          result = result.orWhere(Object.keys(one)[0], Object.values(one)[0]);
+        }
+      }
+    } else {
+      result.where(object);
+    }
+    return result;
+  };
+
   /*
    * select by filter
    * support: and / or
@@ -29,47 +71,11 @@ class BaseRepository {
    *  limit: number
    */
   async getByFilter(filter, options) {
-    const whereBuilder = function (object, builder) {
-      let result = builder;
-      if (object.and) {
-        expect(Object.keys(object)).lengthOf(1);
-        expect(object.and).a(expect.any(Array));
-        for (const one of object.and) {
-          if (one.or) {
-            result = result.andWhere((subBuilder) =>
-              whereBuilder(one, subBuilder),
-            );
-          } else {
-            expect(Object.keys(one)).lengthOf(1);
-            result = result.andWhere(
-              Object.keys(one)[0],
-              Object.values(one)[0],
-            );
-          }
-        }
-      } else if (object.or) {
-        expect(Object.keys(object)).lengthOf(1);
-        expect(object.or).a(expect.any(Array));
-        for (const one of object.or) {
-          if (one.and) {
-            result = result.orWhere((subBuilder) =>
-              whereBuilder(one, subBuilder),
-            );
-          } else {
-            expect(Object.keys(one)).lengthOf(1);
-            result = result.orWhere(Object.keys(one)[0], Object.values(one)[0]);
-          }
-        }
-      } else {
-        result.where(object);
-      }
-      return result;
-    };
     let promise = this._session
       .getDB()
       .select()
       .table(this._tableName)
-      .where((builder) => whereBuilder(filter, builder));
+      .where((builder) => this.whereBuilder(filter, builder));
     if (options && options.limit) {
       promise = promise.limit(options && options.limit);
     }
