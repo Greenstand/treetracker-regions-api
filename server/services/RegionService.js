@@ -1,133 +1,58 @@
-const { v4: uuidv4 } = require('uuid');
-const { valid: gjv } = require('geojson-validation');
-const RegionRepository = require('../repositories/RegionRepository');
+const log = require('loglevel');
+
 const Region = require('../models/Region');
-const HttpError = require('../utils/HttpError');
+const Session = require('../models/Session');
 
 class RegionService {
-  constructor(session) {
-    this._session = session;
-    this.regionRepository = new RegionRepository(session);
+  constructor() {
+    this._session = new Session();
+    this._region = new Region(this._session);
   }
 
-  async getAllByFilter(options) {
-    const { filter, limit, offset, order } = options;
-    const array = await this.regionRepository.getAllByRegionFilter(
-      filter,
-      limit,
-      offset,
-      order,
-    );
-    const regions = array.map((region) => new Region(region).toJSON());
-    return regions;
+  async getShapeByRegionId(id) {
+    return this._region.getShapeByRegionId(id);
   }
 
-  async countByFilter(filter) {
-    const regionCount = await this.regionRepository.countByFilter(filter);
-    return regionCount;
-  }
+  async createFeature(feature) {
+    try {
+      const featureObject = { ...feature };
+      featureObject.properties = feature.shape.properties;
+      const geometry = { ...feature.shape.geometry };
 
-  // async getAllByCollectionId(collectionId) {
-  //   const array = await this.regionRepository.getAllByCollectionId(
-  //     collectionId,
-  //   );
-  //   const regions = array.map((region) => new Region(region).toJSON());
-  //   return regions;
-  // }
-
-  async getById(id) {
-    const object = await this.regionRepository.getById(id);
-    const region = new Region(object);
-    return region.toJSON();
-  }
-
-  async createRegion(region) {
-    if (!gjv(region.shape)) {
-      throw new HttpError(400, 'Invalid File Upload.');
-    }
-    let result;
-    if (region.shape.type === 'FeatureCollection') {
-      const regionCollection = region;
-      regionCollection.collectionId = uuidv4();
-      const { features } = regionCollection.shape;
-      delete regionCollection.features;
-      const newRegions = [];
-      for (let i = 0; i < features.length; i += 1) {
-        const {
-          geometry: { coordinates: shape },
-          properties,
-        } = features[i];
-        const object = new Region({
-          ...regionCollection,
-          shape,
-          properties,
-        });
-        const regionBeforeCreate = new Region(object);
-        const newRegion = await this.regionRepository.createRegion(
-          regionBeforeCreate,
-        );
-        const regionAfterCreate = new Region(newRegion);
-        newRegions.push(regionAfterCreate);
+      if (geometry.type === 'Polygon') {
+        geometry.type = 'MultiPolygon';
+        geometry.coordinates = [geometry.coordinates];
       }
-      result = newRegions;
-    }
-    if (region.shape.type === 'GeometryCollection') {
-      const regionCollection = region;
-      regionCollection.collectionId = uuidv4();
-      const { geometries } = regionCollection.shape;
-      delete regionCollection.geometries;
-      const newRegions = [];
-      for (let i = 0; i < geometries.length; i += 1) {
-        const { coordinates: shape } = geometries[i];
-        const object = {
-          ...regionCollection,
-          shape,
-        };
-        const regionBeforeCreate = new Region(object);
-        const newRegion = await this.regionRepository.createRegion(
-          regionBeforeCreate,
-        );
-        const regionAfterCreate = new Region(newRegion);
-        newRegions.push(regionAfterCreate);
+
+      featureObject.shape = { ...geometry };
+      const newRegion = await this._region.createRegion(
+        Region.RegionToCreate(featureObject),
+      );
+
+      return [newRegion];
+    } catch (e) {
+      log.info('Error:');
+      log.info(e);
+      if (this._session.isTransactionInProgress()) {
+        await this._session.rollbackTransaction();
       }
-      result = newRegions;
+      throw e;
     }
-    if (region.shape.type === 'Feature') {
-      const object = region;
-      object.properties = region.shape.properties;
-      object.shape = region.shape.geometry.coordinates;
-      const regionBeforeCreate = new Region(object);
-      const newRegion = await this.regionRepository.createRegion(
-        regionBeforeCreate,
-      );
-      const regionAfterCreate = new Region(newRegion);
-      result = regionAfterCreate.toJSON();
-    }
-    if (region.shape.type === 'MultiPolygon') {
-      const object = region;
-      object.shape = region.shape;
-      const regionBeforeCreate = new Region(object);
-      const newRegion = await this.regionRepository.createRegion(
-        regionBeforeCreate,
-      );
-      const regionAfterCreate = new Region(newRegion);
-      result = regionAfterCreate.toJSON();
-    }
-    return result;
   }
 
-  async updateRegion(region) {
-    const object = new Region(region);
-    console.log('region', region);
-    const regionBeforeUpdate = await this.regionRepository.update({
-      id: region.id,
-      name: region.name,
-      show_on_org_map: region.showOnOrgMap,
-      calculate_statistics: region.calculateStatistics,
+  async getRegions(filter) {
+    return this._region.getRegions(filter);
+  }
+
+  async getRegionById(id) {
+    return this._region.getRegionById(id);
+  }
+
+  async updateRegion(object) {
+    return this._region.updateRegion({
+      ...object,
+      updated_at: new Date().toISOString(),
     });
-    console.log('sql', regionBeforeUpdate);
-    const regionAfterUpdate = new Region(regionBeforeUpdate);
-    return regionAfterUpdate.toJSON();
   }
 }
 

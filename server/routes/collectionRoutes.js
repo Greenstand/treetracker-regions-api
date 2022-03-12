@@ -3,8 +3,7 @@ const { handlerWrapper } = require('../handlers/utils');
 const {
   collectionHandlerGet,
   collectionHandlerGetByCollectionId,
-  collectionHandlerPost,
-  collectionHandlerPut,
+  collectionHandlerPatch,
 } = require('../handlers/collectionHandler');
 
 const router = express.Router();
@@ -12,12 +11,10 @@ const router = express.Router();
 router.get('/', handlerWrapper(collectionHandlerGet));
 
 router.get(
-  '/:collectionId',
+  '/:collection_id',
   handlerWrapper(collectionHandlerGetByCollectionId),
 );
 
-router.post('/', handlerWrapper(collectionHandlerPost));
-
-router.put('/:collectionId', handlerWrapper(collectionHandlerPut));
+router.patch('/:collection_id', handlerWrapper(collectionHandlerPatch));
 
 module.exports = router;

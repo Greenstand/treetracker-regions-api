@@ -1,101 +1,77 @@
-const { valid: gjv } = require('geojson-validation');
-const RegionRepository = require('../repositories/RegionRepository');
-const CollectionRepository = require('../repositories/CollectionRepository');
+const log = require('loglevel');
+
 const Collection = require('../models/Collection');
-const HttpError = require('../utils/HttpError');
 const Region = require('../models/Region');
+const Session = require('../models/Session');
 
 class CollectionService {
-  constructor(session) {
-    this._session = session;
-    this.regionRepository = new RegionRepository(session);
-    this.collectionRepository = new CollectionRepository(session);
+  constructor() {
+    this._session = new Session();
+    this._region = new Region(this._session);
+    this._collection = new Collection(this._session);
   }
 
-  async getAllByFilter(options) {
-    const { filter, limit, offset, order } = options;
-    const array = await this.collectionRepository.getAllByCollectionFilter(
-      filter,
-      limit,
-      offset,
-      order,
-    );
-    const collections = array.map((collection) => new Collection(collection));
-    return collections;
-  }
+  async createFeatureCollection(featureCollection) {
+    const createNewRegionsPromises = [];
 
-  async countByFilter(filter) {
-    const collectionCount = await this.collectionRepository.countByFilter(
-      filter,
-    );
-    return collectionCount;
-  }
+    const { features } = featureCollection.shape;
 
-  async getById(id) {
-    const object = await this.collectionRepository.getById(id);
-    const collection = new Collection(object);
-    return collection;
-  }
+    try {
+      // create collection instance
+      const collectionObject = Collection.CollectionToCreate({
+        ...featureCollection,
+      });
 
-  async updateCollection(collection) {
-    const collectionBeforeUpdate = new Collection(collection);
-    const object = await this.updateCollection(collectionBeforeUpdate);
-    const collectionAfterUpdate = new Collection(object);
-    return collectionAfterUpdate;
-  }
+      await this._collection.createCollection(collectionObject);
 
-  async createCollection(collection) {
-    if (!gjv(collection.shape)) {
-      throw new HttpError(400, 'Invalid File Upload.');
-    }
-    const collectionBeforeCreate = new Collection(collection);
-    const collectionObject = await this.collectionRepository.create(
-      collectionBeforeCreate,
-    );
-    const newRegions = [];
-    const regionsBeforeCreate = [];
-    const collectionAfterCreate = new Collection(collectionObject);
-    if (collection.shape.type === 'FeatureCollection') {
-      const shapes = collection.shape.features;
-      for (let i = 0; i < shapes.length; i += 1) {
-        const { geometry, properties } = shapes[i];
-        const object = {
-          ...collection,
+      const collection_id = collectionObject.id;
+
+      for (const feature of features) {
+        const {
+          geometry: { coordinates, type },
           properties,
-          ownerId: collectionAfterCreate.owner_id,
-          collectionId: collectionAfterCreate.id,
-          name: properties[collection.nameKey],
+        } = feature;
+
+        const geometry = { type, coordinates };
+
+        if (geometry.type === 'Polygon') {
+          geometry.type = 'MultiPolygon';
+          geometry.coordinates = [geometry.coordinates];
+        }
+
+        const regionObject = Region.RegionToCreate({
+          ...featureCollection,
           shape: geometry,
-        };
-        const regionBeforeCreate = new Region(object);
-        regionsBeforeCreate.push(regionBeforeCreate);
-      }
-    } else if (collection.shape.type === 'GeometryCollection') {
-      const shapes = collection.shape.geometries;
-      for (let i = 0; i < shapes.length; i += 1) {
-        const { coordinates: shape, properties } = shapes[i];
-        const object = {
-          ...collection,
           properties,
-          collectionId: collectionAfterCreate.id,
-          name: null,
-          shape,
-        };
-        const regionBeforeCreate = new Region(object);
-        regionsBeforeCreate.push(regionBeforeCreate);
+          collection_id,
+        });
+        createNewRegionsPromises.push(this._region.createRegion(regionObject));
       }
-    } else {
-      throw new HttpError(400);
+
+      return Promise.all(createNewRegionsPromises);
+    } catch (e) {
+      log.info('Error:');
+      log.info(e);
+      if (this._session.isTransactionInProgress()) {
+        await this._session.rollbackTransaction();
+      }
+      throw e;
     }
-    const regionsAfterCreate = await this.regionRepository.createRegions(
-      regionsBeforeCreate,
-    );
-    const regions = regionsAfterCreate.map((region) => new Region(region));
-    // console.log(regionsAfterCreate);
-    return {
-      collection: collectionAfterCreate.toJSON(),
-      regions,
-    };
+  }
+
+  async getCollections(filter = {}) {
+    return this._collection.getCollections(filter);
+  }
+
+  async getCollectionById(id) {
+    return this._collection.getCollectionById(id);
+  }
+
+  async updateCollection(object) {
+    return this._collection.updateCollection({
+      ...object,
+      updated_at: new Date().toISOString(), 
+    });
   }
 }
 

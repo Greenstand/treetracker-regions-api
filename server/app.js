@@ -1,13 +1,10 @@
 const express = require('express');
 const Sentry = require('@sentry/node');
-const bodyParser = require('body-parser');
-const asyncHandler = require('express-async-handler');
-const { check, validationResult } = require('express-validator');
-const { body } = require('express-validator');
 const log = require('loglevel');
 const HttpError = require('./utils/HttpError');
 const regionRouter = require('./routes/regionRoutes');
-const collectionRounter = require('./routes/collectionRoutes'); // create your router
+const collectionRouter = require('./routes/collectionRoutes');
+const uploadRouter = require('./routes/uploadRoutes');
 const { errorHandler } = require('./handlers/utils');
 const helper = require('./handlers/utils');
 const config = require('../config/config');
@@ -37,12 +34,13 @@ app.use(
   }),
 );
 
-app.use(bodyParser.urlencoded({ extended: false })); // parse application/x-www-form-urlencoded
-app.use(bodyParser.json()); // parse application/json
+app.use(express.urlencoded({ extended: false }));
+app.use(express.json({ limit: '10mb' }));
 
 // routers
 app.use('/region', regionRouter);
-app.use('collection', collectionRounter);
+app.use('/collection', collectionRouter);
+app.use('/upload', uploadRouter);
 
 // paths
 // app.get('/entity', asyncHandler(async (req, res, next) => {

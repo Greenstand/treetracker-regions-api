@@ -1,27 +1,35 @@
-const { validate: uuidValidate, v4: uuidv4 } = require('uuid');
-const HttpError = require('../utils/HttpError');
-const validateRegionUpload = require('../utils/ValidateRegionUpload');
+const { v4: uuidv4 } = require('uuid');
+const CollectionRepository = require('../repositories/CollectionRepository');
 
 class Collection {
-  constructor(JSON) {
-    if (uuidValidate(JSON.id)) {
-      this.id = JSON.id;
-    } else if (validateRegionUpload(JSON)) {
-      this.id = uuidv4();
-    } else {
-      throw new HttpError(400, 'Invalid upload.');
-    }
-    this.owner_id = JSON.ownerId || JSON.owner_id;
-    this.name = JSON.name;
+  constructor(session) {
+    this._collectionRepository = new CollectionRepository(session);
   }
 
-  toJSON() {
-    const JSON = {
-      id: this.id,
-      ownerId: this.ownerId,
-      name: this.name,
-    };
-    return JSON;
+  static CollectionToCreate({ owner_id, name }) {
+    return Object.freeze({
+      id: uuidv4(),
+      owner_id,
+      name,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    });
+  }
+
+  async getCollections(filter) {
+    return this._collectionRepository.getByFilter(filter);
+  }
+
+  async createCollection(collectionObject) {
+    return this._collectionRepository.create(collectionObject);
+  }
+
+  async getCollectionById(id) {
+    return this._collectionRepository.getById(id);
+  }
+
+  async updateCollection(collectionObject) {
+    return this._collectionRepository.update(collectionObject);
   }
 }
 

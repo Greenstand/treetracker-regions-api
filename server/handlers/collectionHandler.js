@@ -1,54 +1,60 @@
-const Session = require('../models/Session');
+const Joi = require('joi');
 const CollectionService = require('../services/CollectionService');
+const { addShapeUrlToRegionArrayObjects } = require('../utils/helper');
+const HttpError = require('../utils/HttpError');
+
+const collectionIdQuerySchema = Joi.object({
+  collection_id: Joi.string().uuid().required(),
+}).unknown(false);
+
+const collectionPatchQuerySchema = Joi.object({
+  owner_id: Joi.string().uuid(),
+  name: Joi.string(),
+}).unknown(false);
 
 const collectionHandlerGet = async function (req, res) {
-  const { options } = req.query;
-  const session = new Session();
-  const collectionService = new CollectionService(session);
-  const ownerCollections = await collectionService.getAllByFilter(options);
-  res.status(200).json({
-    collections: ownerCollections,
-  });
-};
-
-const collectionHandlerGetCount = async function (req, res) {
-  const { filter } = req.query;
-  const session = new Session();
-  const collectionService = new CollectionService(session);
-  const ownerCollectionsCount = await collectionService.countByFilter(filter);
-  res.status(200).json({
-    count: ownerCollectionsCount,
-  });
+  // filters here
+  const collectionService = new CollectionService();
+  const collections = await collectionService.getCollections(req.query);
+  res.status(200).json({ collections });
 };
 
 const collectionHandlerGetByCollectionId = async function (req, res) {
-  const { collectionId } = req.params;
-  const session = new Session();
-  const collectionService = new CollectionService(session);
-  const collection = await collectionService.getById(collectionId);
+  await collectionIdQuerySchema.validateAsync(req.params, {
+    abortEarly: false,
+  });
+
+  const collectionService = new CollectionService();
+  const [collection] = await collectionService.getCollectionById(
+    req.params.collection_id,
+  );
+
+  if (!collection)
+    throw new HttpError(
+      404,
+      `collection with ${req.params.collection_id} not found`,
+    );
+
+  collection.regions = addShapeUrlToRegionArrayObjects(collection.regions);
+
   res.status(200).json({ collection });
 };
 
-const collectionHandlerPost = async function (req, res) {
-  const { ownerId } = req.query;
-  const collection = req.body;
-  console.log(collection);
-  collection.ownerId = ownerId;
-  const session = new Session();
-  const collectionService = new CollectionService(session);
-  const newCollection = await collectionService.createCollection(collection);
-  res.status(200).json(newCollection);
-};
+const collectionHandlerPatch = async function (req, res) {
+  await collectionIdQuerySchema.validateAsync(req.params, {
+    abortEarly: false,
+  });
 
-const collectionHandlerPut = async function (req, res) {
-  const { collectionId } = req.params;
-  const collection = req.body;
-  collection.id = collectionId;
-  const session = new Session();
-  const collectionService = new CollectionService(session);
-  const updatedCollection = await collectionService.updateCollection(
-    collection,
-  );
+  await collectionPatchQuerySchema.validateAsync(req.body, {
+    abortEarly: false,
+  });
+
+  const collectionService = new CollectionService();
+  const updatedCollection = await collectionService.updateCollection({
+    ...req.body,
+    id: req.params.collection_id,
+  });
+
   res.status(200).json({
     collection: updatedCollection,
   });
@@ -57,7 +63,5 @@ const collectionHandlerPut = async function (req, res) {
 module.exports = {
   collectionHandlerGet,
   collectionHandlerGetByCollectionId,
-  collectionHandlerGetCount,
-  collectionHandlerPost,
-  collectionHandlerPut,
+  collectionHandlerPatch,
 };
