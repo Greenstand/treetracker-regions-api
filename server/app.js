@@ -1,6 +1,5 @@
 const express = require('express');
 const Sentry = require('@sentry/node');
-const log = require('loglevel');
 const HttpError = require('./utils/HttpError');
 const regionRouter = require('./routes/regionRoutes');
 const collectionRouter = require('./routes/collectionRoutes');

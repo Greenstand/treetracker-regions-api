@@ -41,7 +41,6 @@
     "geojson-validation": "^1.0.2",
     "joi": "^17.5.0",
     "knex": "^0.95.12",
-    "knex-postgis": "^0.14.1",
     "loglevel": "^1.6.8",
     "pg": "^8.3.0",
     "uuid": "^8.3.2"

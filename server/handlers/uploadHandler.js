@@ -12,7 +12,7 @@ const uploadPostSchema = Joi.object({
   shape: Joi.any().required(), // geojson
 }).unknown(false);
 
-const uploadHandlerPost = async (req, res, next) => {
+const uploadHandlerPost = async (req, res) => {
   await uploadPostSchema.validateAsync(req.body, {
     abortEarly: false,
   });

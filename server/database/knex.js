@@ -1,4 +1,3 @@
-const expect = require('expect-runtime');
 const log = require('loglevel');
 
 const knexConfig = {

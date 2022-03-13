@@ -26,7 +26,7 @@ class CollectionService {
 
       const collection_id = collectionObject.id;
 
-      for (const feature of features) {
+      features.forEach((feature) => {
         const {
           geometry: { coordinates, type },
           properties,
@@ -46,7 +46,7 @@ class CollectionService {
           collection_id,
         });
         createNewRegionsPromises.push(this._region.createRegion(regionObject));
-      }
+      });
 
       return Promise.all(createNewRegionsPromises);
     } catch (e) {
