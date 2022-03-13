@@ -1,3 +1,11 @@
+## [1.1.1](https://github.com/Greenstand/treetracker-regions-api/compare/v1.1.0...v1.1.1) (2022-03-13)
+
+
+### Bug Fixes
+
+* schema in deployment ([8bced12](https://github.com/Greenstand/treetracker-regions-api/commit/8bced12b988f9e610146278b3c95106b9c9e66f4))
+* setup ([09db3b1](https://github.com/Greenstand/treetracker-regions-api/commit/09db3b1fcbb8cd6297e112bc15ab7c7f7f785e0b))
+
 # [1.1.0](https://github.com/Greenstand/treetracker-regions-api/compare/v1.0.3...v1.1.0) (2022-03-13)
 
 
