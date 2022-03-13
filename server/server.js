@@ -1,6 +1,13 @@
-require('dotenv').config();
-const log = require('loglevel');
-// setup log level
+require('dotenv').config({ path: `.env.${process.env.NODE_ENV}` });
+
+const log = require("loglevel");
+
+if (process.env.NODE_LOG_LEVEL) {
+  log.setDefaultLevel(process.env.NODE_LOG_LEVEL);
+} else {
+  log.setDefaultLevel('info');
+}
+
 require('./setup');
 const app = require('./app');
 
