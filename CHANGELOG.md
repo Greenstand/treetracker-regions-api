@@ -1,3 +1,20 @@
+# [1.1.0](https://github.com/Greenstand/treetracker-regions-api/compare/v1.0.3...v1.1.0) (2022-03-13)
+
+
+### Bug Fixes
+
+* add id to updateRegion ([a50d3b6](https://github.com/Greenstand/treetracker-regions-api/commit/a50d3b68be76472881e5d73be2eb84b07ed54282))
+* include public schema in search path ([ca836ca](https://github.com/Greenstand/treetracker-regions-api/commit/ca836cad128cf369809ba8e8f2422abcc889b8fd))
+* linting ([1a91003](https://github.com/Greenstand/treetracker-regions-api/commit/1a910033d5662331724961ff64cc486649fc254a))
+* make whereBuilder available to child classes ([976350f](https://github.com/Greenstand/treetracker-regions-api/commit/976350f5f9d5a2bfbd40f319b6c6b145d4579599))
+* refactor api ([e43fa46](https://github.com/Greenstand/treetracker-regions-api/commit/e43fa4680a7a07d415bfbf117c7c531815d8af54))
+* use snake case for parameters ([b15e2b8](https://github.com/Greenstand/treetracker-regions-api/commit/b15e2b8b23f6da0be1f842f9e83b39d9f94bce8f))
+
+
+### Features
+
+* add knex-postgis ([1f99931](https://github.com/Greenstand/treetracker-regions-api/commit/1f9993137ba3cb10e2c117672efce428cd4e96d4))
+
 ## [1.0.3](https://github.com/Greenstand/treetracker-regions-api/compare/v1.0.2...v1.0.3) (2022-02-11)
 
 ### Bug Fixes
