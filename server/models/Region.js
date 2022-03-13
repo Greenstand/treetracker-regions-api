@@ -46,6 +46,10 @@ class Region {
     return this._regionRepository.getById(id);
   }
 
+  async getRegionCount(filter = {}) {
+    return this._regionRepository.countByFilter(filter);
+  }
+
   async updateRegion(regionObject) {
     return this._regionRepository.update(regionObject);
   }

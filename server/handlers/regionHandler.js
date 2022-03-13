@@ -24,11 +24,22 @@ const regionHandlerGet = async function (req, res, next) {
 
   const regionService = new RegionService();
   const regions = await regionService.getRegions(filter);
+  const count = await regionService.getRegionCount(filter?.where);
 
   const updatedResultWithShapeLink = addShapeUrlToRegionArrayObjects(regions);
 
-  res.status(200).json({ regions: updatedResultWithShapeLink });
+  res.status(200).json({ regions: updatedResultWithShapeLink, count });
 };
+
+const regionHandlerGetCount = async function (req, res, next) {
+  // await regionGetQuerySchema.validateAsync(req.query, {
+  //   abortEarly: false,
+  // });
+  const filter = {};
+  const regionService = new RegionService();
+  const count = await regionService.getRegionCount(filter?.where);
+  res.status(200).json({ count });
+}
 
 const regionHandlerGetByRegionId = async function (req, res, next) {
   await regionIdQuerySchema.validateAsync(req.params, {
@@ -88,6 +99,7 @@ const regionHandlerPatch = async function (req, res, next) {
 
 module.exports = {
   regionHandlerGet,
+  regionHandlerGetCount,
   regionHandlerGetByRegionId,
   regionHandlerPatch,
   regionHandlerGetShapeByRegionId,

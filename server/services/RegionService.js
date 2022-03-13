@@ -48,6 +48,10 @@ class RegionService {
     return this._region.getRegionById(id);
   }
 
+  async getRegionCount(filter) {
+    return this._region.getRegionCount(filter);
+  }
+
   async updateRegion(object) {
     return this._region.updateRegion({
       ...object,
