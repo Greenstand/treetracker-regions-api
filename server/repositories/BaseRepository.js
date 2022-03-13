@@ -22,13 +22,12 @@ class BaseRepository {
     return object;
   }
 
-  // eslint-disable-next-line class-methods-use-this
   whereBuilder(object, builder) {
     let result = builder;
     if (object.and) {
       expect(Object.keys(object)).lengthOf(1);
       expect(object.and).a(expect.any(Array));
-      
+
       // eslint-disable-next-line no-restricted-syntax
       for (const one of object.and) {
         if (one.or) {
@@ -37,10 +36,7 @@ class BaseRepository {
           );
         } else {
           expect(Object.keys(one)).lengthOf(1);
-          result = result.andWhere(
-            Object.keys(one)[0],
-            Object.values(one)[0],
-          );
+          result = result.andWhere(Object.keys(one)[0], Object.values(one)[0]);
         }
       }
     } else if (object.or) {
@@ -62,7 +58,7 @@ class BaseRepository {
       result.where(object);
     }
     return result;
-  };
+  }
 
   /*
    * select by filter

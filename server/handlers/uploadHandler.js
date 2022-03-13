@@ -1,14 +1,15 @@
 const Joi = require('joi');
-const UploadService = require('../services/UploadService');
 const { valid: gjv } = require('geojson-validation');
+const UploadService = require('../services/UploadService');
 const { addShapeUrlToRegionArrayObjects } = require('../utils/helper');
+const HttpError = require('../utils/HttpError');
 
 const uploadPostSchema = Joi.object({
   owner_id: Joi.string().uuid().required(),
   name: Joi.string().required(),
   show_on_org_map: Joi.boolean(),
   calculate_statistics: Joi.boolean(),
-  shape: Joi.any().required(), //geojson
+  shape: Joi.any().required(), // geojson
 }).unknown(false);
 
 const uploadHandlerPost = async (req, res, next) => {

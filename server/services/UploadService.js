@@ -1,3 +1,4 @@
+const log = require('loglevel');
 const RegionService = require('./RegionService');
 const CollectionService = require('./CollectionService');
 const HttpError = require('../utils/HttpError');

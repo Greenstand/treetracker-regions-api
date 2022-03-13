@@ -70,7 +70,7 @@ class CollectionService {
   async updateCollection(object) {
     return this._collection.updateCollection({
       ...object,
-      updated_at: new Date().toISOString(), 
+      updated_at: new Date().toISOString(),
     });
   }
 }
