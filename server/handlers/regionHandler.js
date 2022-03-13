@@ -32,12 +32,9 @@ const regionHandlerGet = async function (req, res, next) {
 };
 
 const regionHandlerGetCount = async function (req, res, next) {
-  // await regionGetQuerySchema.validateAsync(req.query, {
-  //   abortEarly: false,
-  // });
   const filter = {};
   const regionService = new RegionService();
-  const count = await regionService.getRegionCount(filter?.where);
+  const count = await regionService.getRegionCount(filter);
   res.status(200).json({ count });
 }
 
