@@ -38,7 +38,7 @@ const regionHandlerGetByRegionId = async function (req, res) {
   const regionService = new RegionService();
   const region = await regionService.getRegionById(req.params.region_id);
 
-  const [updatedResultWithShapeLink] = addShapeUrlToRegionArrayObjects([
+  const [updatedResultWithShapeLink = {}] = addShapeUrlToRegionArrayObjects([
     region,
   ]);
 

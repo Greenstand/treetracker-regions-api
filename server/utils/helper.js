@@ -1,6 +1,6 @@
 const addShapeUrlToRegionArrayObjects = (regions) =>
   regions.map((r) => {
-    return { ...r, shape: `region/shape/${r.id}` };
+    return { ...r, shape: `region/${r.id}/shape` };
   });
 
 module.exports = {

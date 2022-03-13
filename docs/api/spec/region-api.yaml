@@ -1,0 +1,256 @@
+openapi: 3.1.0
+info:
+  title: Messages API
+  version: '1.0'
+servers: []
+paths:
+  /region:
+    get:
+      summary: Your GET endpoint
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  region:
+                    $ref: '#/components/schemas/Region'
+      operationId: get-regions
+      description: Get list of all region descriptions
+    parameters: []
+  '/region/:region_id':
+    get:
+      summary: Your GET endpoint
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  region:
+                    $ref: '#/components/schemas/Region'
+      operationId: 'get-region-:region_id'
+    parameters: []
+    patch:
+      summary: ''
+      operationId: 'patch-region-:region_id'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  region:
+                    $ref: '#/components/schemas/Region'
+      description: ''
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                owner_id:
+                  type: string
+                  format: uuid
+                show_on_org_map:
+                  type: boolean
+                calculate_statistics:
+                  type: boolean
+  /collection:
+    get:
+      summary: Your GET endpoint
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  collection:
+                    $ref: '#/components/schemas/Collection'
+      operationId: get-collections
+      description: ''
+      parameters: []
+    parameters: []
+  '/collection/:collection_id':
+    parameters: []
+    get:
+      summary: Your GET endpoint
+      tags: []
+      responses: {}
+      operationId: get-collection-collection_id
+      description: ''
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                collection:
+                  $ref: '#/components/schemas/Collection'
+    patch:
+      summary: ''
+      operationId: 'patch-collection-:collection_id'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  collection:
+                    $ref: '#/components/schemas/Collection'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                owner_id:
+                  type: string
+                  format: uuid
+                name:
+                  type: string
+  /upload:
+    post:
+      summary: Author an message to a group
+      operationId: post-upload
+      responses:
+        '201':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Region'
+      description: ''
+      requestBody:
+        content:
+          application/json:
+            schema:
+              description: ''
+              type: object
+              x-examples:
+                example-1:
+                  recipient_handle: string
+                  organization_id: uuid
+                  region: string
+                  from: string
+                  subject: string
+                  body: string
+              properties:
+                owner_id:
+                  type: string
+                  format: uuid
+                name:
+                  type: string
+                show_on_org_map:
+                  type: boolean
+                calculate_statistics:
+                  type: boolean
+                shape:
+                  type: object
+              required:
+                - owner_id
+                - name
+                - shape
+            examples: {}
+    parameters: []
+  '/region/:region_id/shape':
+    get:
+      summary: Your GET endpoint
+      tags: []
+      responses:
+        '200':
+          description: OK
+          headers:
+            Content-Type:
+              schema:
+                type: string
+              description: application/geo+json
+            Content-Disposition:
+              schema:
+                type: string
+              description: 'attachment; filename=${region.name}.geojson'
+      operationId: 'get-region-shape-:region_id'
+    parameters: []
+components:
+  schemas:
+    Collection:
+      title: Collection
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        owner_id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        regions:
+          $ref: '#/components/schemas/Region'
+      required:
+        - id
+        - owner_id
+        - name
+        - created_at
+        - updated_at
+    Region:
+      title: Region
+      type: object
+      description: ''
+      properties:
+        id:
+          type: string
+          format: uuid
+        owner_id:
+          type: string
+          format: uuid
+        collection_id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        properties:
+          type: object
+        show_on_org_map:
+          type: boolean
+        calculate_statistics:
+          type: boolean
+        shape:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+      required:
+        - id
+        - owner_id
+        - name
+        - properties
+        - shape
+        - created_at
+        - updated_at
