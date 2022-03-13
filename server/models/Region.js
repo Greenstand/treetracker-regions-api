@@ -1,85 +1,54 @@
-const { validate: uuidValidate, v4: uuidv4 } = require('uuid');
-const HttpError = require('../utils/HttpError');
-const validateRegionUpload = require('../utils/ValidateRegionUpload');
+const { v4: uuidv4 } = require('uuid');
+const RegionRepository = require('../repositories/RegionRepository');
 
 class Region {
-  constructor(JSON) {
-    if (uuidValidate(JSON.id)) {
-      this.id = JSON.id;
-    } else if (validateRegionUpload(JSON)) {
-      this.id = uuidv4();
-    } else {
-      throw new HttpError(400, 'Invalid upload.');
-    }
-    this.owner_id = JSON.ownerId || JSON.owner_id;
-    this.collection_id =
-      JSON.collectionId || JSON.collection_id
-        ? JSON.collectionId || JSON.collection_id
-        : null;
-    this.name = JSON.name;
-    this.shape = JSON.shape;
-    this.properties = JSON.properties || null;
-    this.show_on_org_map =
-      typeof JSON.showOnOrgMap === 'boolean' ||
-      typeof JSON.show_on_org_map === 'boolean'
-        ? JSON.showOnOrgMap || JSON.show_on_org_map
-        : null;
-    this.calculate_statistics =
-      typeof JSON.calculateStatistics === 'boolean' ||
-      typeof JSON.calculate_statistics === 'boolean'
-        ? JSON.calculateStatistics || JSON.calculate_statistics
-        : null;
-    this.created_at =
-      JSON.created_at || JSON.createdAt
-        ? JSON.created_at || JSON.createdAt
-        : new Date();
-    this.updated_at =
-      JSON.updated_at || JSON.updatedAt
-        ? JSON.updated_at || JSON.updatedAt
-        : new Date();
+  // Add a region model and also for collection
+  constructor(session) {
+    this._regionRepository = new RegionRepository(session);
   }
 
-  toJSON() {
-    const JSON = {
-      id: this.id,
-      ownerId: this.owner_id,
-      collectionId: this.collection_id,
-      name: this.name,
-      shape: this.shape,
-      properties: this.properties,
-      showOnOrgMap: this.show_on_org_map,
-      calculateStatistics: this.calculate_statistics,
-      createdAt: this.created_at,
-      updatedAt: this.updated_at,
-    };
-    return JSON;
+  static RegionToCreate({
+    owner_id,
+    collection_id = null,
+    name,
+    shape,
+    properties,
+    show_on_org_map = null,
+    calculate_statistics = null,
+  }) {
+    return Object.freeze({
+      id: uuidv4(),
+      owner_id,
+      collection_id,
+      name,
+      shape,
+      properties,
+      show_on_org_map,
+      calculate_statistics,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    });
+  }
+
+  async createRegion(regionObject) {
+    return this._regionRepository.createRegion(regionObject);
+  }
+
+  async getShapeByRegionId(id) {
+    return this._regionRepository.getShapeByRegionId(id);
+  }
+
+  async getRegions(filter = {}) {
+    return this._regionRepository.getByFilter(filter);
+  }
+
+  async getRegionById(id) {
+    return this._regionRepository.getById(id);
+  }
+
+  async updateRegion(regionObject) {
+    return this._regionRepository.update(regionObject);
   }
 }
-
-// class Region {
-//   constructor(idOrJSON, session) {
-//     if (uuidValidate(idOrJSON)) {
-//       this._id = idOrJSON;
-//     } else if (typeof idOrJSON === 'object' && uuidValidate(idOrJSON.id)) {
-//       this._id = idOrJSON.id;
-//       this._JSON = idOrJSON;
-//     } else if (typeof idOrJSON === 'object' && validateRegionUpload(idOrJSON)) {
-//       this._id = uuidv4();
-//       this._JSON = idOrJSON;
-//     } else {
-//         throw new HttpError(400, "Invalid upload.")
-//     }
-//     this._session = session;
-//   }
-
-//   async toJSON() {
-//     if (this._JSON) {
-//       this._JSON.id = this._id
-//       return this._JSON;
-//     }
-//     this._JSON = await this.regionRepository.getById(this._id);
-//     return this._JSON;
-//   }
-// }
 
 module.exports = Region;

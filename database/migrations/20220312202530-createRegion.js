@@ -18,7 +18,11 @@ exports.setup = function (options, seedLink) {
 };
 
 exports.up = function (db) {
-  const filePath = path.join(__dirname, 'sqls', '20220114142228-region-up.sql');
+  const filePath = path.join(
+    __dirname,
+    'sqls',
+    '20220312202530-createRegion-up.sql',
+  );
   return new Promise(function (resolve, reject) {
     fs.readFile(filePath, { encoding: 'utf-8' }, function (err, data) {
       if (err) return reject(err);
@@ -35,7 +39,7 @@ exports.down = function (db) {
   const filePath = path.join(
     __dirname,
     'sqls',
-    '20220114142228-region-down.sql',
+    '20220312202530-createRegion-down.sql',
   );
   return new Promise(function (resolve, reject) {
     fs.readFile(filePath, { encoding: 'utf-8' }, function (err, data) {

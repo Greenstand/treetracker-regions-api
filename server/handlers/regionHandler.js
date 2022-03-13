@@ -1,64 +1,94 @@
-const Session = require('../models/Session');
+const Joi = require('joi');
 const RegionService = require('../services/RegionService');
+const { addShapeUrlToRegionArrayObjects } = require('../utils/helper');
+
+const regionIdQuerySchema = Joi.object({
+  region_id: Joi.string().uuid().required(),
+}).unknown(false);
+
+const regionPatchQuerySchema = Joi.object({
+  owner_id: Joi.string().uuid(),
+  name: Joi.string(),
+  show_on_org_map: Joi.boolean(),
+  calculate_statistics: Joi.boolean(),
+}).unknown(false);
+
+// const regionGetQuerySchema = Joi.object({});
 
 const regionHandlerGet = async function (req, res, next) {
-  const { options } = req.query;
-  const session = new Session();
-  const regionSerivce = new RegionService(session);
-  const ownerRegions = await regionSerivce.getAllByFilter(JSON.parse(options));
-  res.status(200).json(ownerRegions);
-};
+  // await regionGetQuerySchema.validateAsync(req.query, {
+  //   abortEarly: false,
+  // });
 
-const regionHandlerGetCount = async function (req, res, next) {
-  const { filter } = req.query;
-  const session = new Session();
-  const regionSerivce = new RegionService(session);
-  const ownerRegionsCount = await regionSerivce.countByFilter(
-    JSON.parse(filter),
-  );
-  res.status(200).json({
-    count: ownerRegionsCount,
-  });
+  const filter = {};
+
+  const regionService = new RegionService();
+  const regions = await regionService.getRegions(filter);
+
+  const updatedResultWithShapeLink = addShapeUrlToRegionArrayObjects(regions);
+
+  res.status(200).json({ regions: updatedResultWithShapeLink });
 };
 
 const regionHandlerGetByRegionId = async function (req, res, next) {
-  const { regionId } = req.params;
-  const session = new Session();
-  const regionSerivce = new RegionService(session);
-  const region = await regionSerivce.getById(regionId);
-  res.status(200).json({
-    region,
+  await regionIdQuerySchema.validateAsync(req.params, {
+    abortEarly: false,
   });
+
+  const regionService = new RegionService();
+  const region = await regionService.getRegionById(req.params.region_id);
+
+  const [updatedResultWithShapeLink] = addShapeUrlToRegionArrayObjects([
+    region,
+  ]);
+
+  res.status(200).json({ region: updatedResultWithShapeLink });
 };
 
-const regionHandlerPost = async function (req, res, next) {
-  const { ownerId } = req.query;
-  const region = req.body;
-  region.ownerId = ownerId;
-  const session = new Session();
-  const regionSerivce = new RegionService(session);
-  const newRegion = await regionSerivce.createRegion(region);
-  res.status(200).json({
-    region: newRegion,
+const regionHandlerGetShapeByRegionId = async function (req, res, next) {
+  await regionIdQuerySchema.validateAsync(req.params, {
+    abortEarly: false,
   });
+
+  const regionService = new RegionService();
+  const result = await regionService.getShapeByRegionId(req.params.region_id);
+
+  res.writeHead(200, {
+    'Content-Type': 'application/geo+json',
+    'Content-Disposition': `attachment; filename=${result.name}.geojson`,
+  });
+
+  res.write(result.shape);
+  res.end();
 };
 
 const regionHandlerPatch = async function (req, res, next) {
-  const { regionId } = req.params;
-  const region = req.body;
-  region.id = regionId;
-  const session = new Session();
-  const regionSerivce = new RegionService(session);
-  const updatedRegion = await regionSerivce.updateRegion(region);
+  await regionIdQuerySchema.validateAsync(req.params, {
+    abortEarly: false,
+  });
+
+  await regionPatchQuerySchema.validateAsync(req.body, {
+    abortEarly: false,
+  });
+
+  const regionService = new RegionService();
+  const updatedRegion = await regionService.updateRegion({
+    ...req.body,
+    id: req.params.region_id,
+  });
+
+  const [updatedResultWithShapeLink] = addShapeUrlToRegionArrayObjects([
+    updatedRegion,
+  ]);
+
   res.status(200).json({
-    region: updatedRegion,
+    region: updatedResultWithShapeLink,
   });
 };
 
 module.exports = {
   regionHandlerGet,
-  regionHandlerGetCount,
   regionHandlerGetByRegionId,
-  regionHandlerPost,
   regionHandlerPatch,
+  regionHandlerGetShapeByRegionId,
 };
