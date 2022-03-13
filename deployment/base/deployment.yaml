@@ -36,6 +36,6 @@ spec:
                   name: database-connection
                   key: db
             - name: DATABASE_SCHEMA
-              value: messaging
+              value: regions
       imagePullSecrets:
         - name: greenstand-docker-secret
