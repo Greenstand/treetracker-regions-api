@@ -4,4 +4,3 @@ exports.seed = async function (knex) {
     DELETE FROM collection;
   `);
 };
-

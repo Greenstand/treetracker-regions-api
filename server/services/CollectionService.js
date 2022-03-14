@@ -12,7 +12,6 @@ class CollectionService {
   }
 
   async createFeatureCollection(featureCollection) {
-    const createNewRegionsPromises = [];
 
     const { features } = featureCollection.shape;
 
@@ -26,7 +25,7 @@ class CollectionService {
 
       const collection_id = collectionObject.id;
 
-      for (const feature of features) {
+      const createRegionsPromises = features.map( feature => {
         const {
           geometry: { coordinates, type },
           properties,
@@ -45,10 +44,10 @@ class CollectionService {
           properties,
           collection_id,
         });
-        createNewRegionsPromises.push(this._region.createRegion(regionObject));
-      }
+        return this._region.createRegion(regionObject);
+      })
 
-      return Promise.all(createNewRegionsPromises);
+      return Promise.all(createRegionsPromises);
     } catch (e) {
       log.info('Error:');
       log.info(e);

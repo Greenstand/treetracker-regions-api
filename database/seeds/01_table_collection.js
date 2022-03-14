@@ -1,4 +1,5 @@
 const Chance = require('chance');
+
 const chance = new Chance();
 
 //
@@ -21,8 +22,8 @@ const seed = async function (knex) {
     const collection = {
       id: collectionOneId,
       owner_id: collectionOneOwnerId,
-      name: chance.word()
-    }
+      name: chance.word(),
+    };
     collections.push(collection);
   }
 
@@ -30,19 +31,18 @@ const seed = async function (knex) {
     const collection = {
       id: collectionTwoId,
       owner_id: collectionTwoOwnerId,
-      name: chance.word()
-    }
+      name: chance.word(),
+    };
     collections.push(collection);
   }
 
   await knex('collection').insert(collections);
-
-}
+};
 
 module.exports = {
   seed,
   collectionOneId,
   collectionOneOwnerId,
   collectionTwoId,
-  collectionTwoOwnerId
-}
+  collectionTwoOwnerId,
+};

@@ -1,6 +1,3 @@
-const expect = require('expect-runtime');
-const knexPostgis = require('knex-postgis');
-const HttpError = require('../utils/HttpError');
 const BaseRepository = require('./BaseRepository');
 
 class RegionRepository extends BaseRepository {

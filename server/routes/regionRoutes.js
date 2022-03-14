@@ -3,7 +3,7 @@ const { handlerWrapper } = require('../handlers/utils');
 const {
   regionHandlerGet,
   regionHandlerGetByRegionId,
-  regionHandlerPost,
+  _regionHandlerPost,
   regionHandlerPatch,
   regionHandlerGetCount,
   regionHandlerGetShapeByRegionId,

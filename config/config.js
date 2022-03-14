@@ -1,7 +1,9 @@
+const log = require('loglevel');
+
 exports.connectionString = process.env.DATABASE_URL;
 
 if (!process.env.DATABASE_URL) {
-  console.log('no database URL set from environment!');
+  log.error('no database URL set from environment!');
 }
 
 exports.sentryDSN = '';
