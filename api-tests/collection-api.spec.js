@@ -11,15 +11,22 @@ const region = require('../database/seeds/data/region.json');
 const {
   seed: databaseCleaner,
 } = require('../database/seeds/00_job_database_cleaner');
-const {
-  seed: collectionSeed,
-  collectionId,
-} = require('../database/seeds/02_table_collection');
+const { parseGeometry } = require('./utils');
+
+const collectionId = '71dd3785-9b5a-4ff2-bee5-15f84ca25738';
+const collectionObject = {
+  owner_id: region.owner_id,
+  name: 'TestCollection',
+  id: collectionId,
+};
 
 describe('Collection API tests.', () => {
   beforeEach(async () => {
     await databaseCleaner(knex);
-    await collectionSeed(knex);
+    await knex('collection').insert(collectionObject).returning('id');
+    await knex('region').insert(
+      parseGeometry({ ...region, collection_id: collectionId }),
+    );
   });
 
   it('GET /collection', async () => {
@@ -29,8 +36,8 @@ describe('Collection API tests.', () => {
     expect(res.body.collections)
       .to.be.an('array')
       .that.contains.something.like({
-        owner_id: '2898d0fb-49a0-44f7-8efa-0a5d146d13e6',
-        name: 'TestCollection',
+        owner_id: collectionObject.owner_id,
+        name: collectionObject.name,
       });
   });
 

@@ -11,12 +11,12 @@ const region = require('../database/seeds/data/region.json');
 const {
   seed: databaseCleaner,
 } = require('../database/seeds/00_job_database_cleaner');
-const { seed: regionSeed } = require('../database/seeds/01_table_region');
+const { parseGeometry } = require('./utils');
 
 describe('Region API tests.', () => {
   beforeEach(async () => {
     await databaseCleaner(knex);
-    await regionSeed(knex);
+    await knex('region').insert(parseGeometry({ ...region }));
   });
 
   it('GET /region', async () => {

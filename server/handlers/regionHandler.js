@@ -26,7 +26,7 @@ const regionGetQuerySchema = Joi.object({
   offset: Joi.number().integer().greater(-1),
 });
 
-const regionHandlerGet = async function (req, res) {
+const regionHandlerGet = async function (req, res, _next) {
   await regionGetQuerySchema.validateAsync(req.query, {
     abortEarly: false,
   });
@@ -66,7 +66,7 @@ const regionHandlerGet = async function (req, res) {
   });
 };
 
-const regionHandlerGetByRegionId = async function (req, res) {
+const regionHandlerGetByRegionId = async function (req, res, _next) {
   await regionIdQuerySchema.validateAsync(req.params, {
     abortEarly: false,
   });
@@ -81,7 +81,7 @@ const regionHandlerGetByRegionId = async function (req, res) {
   res.status(200).json({ region: updatedResultWithShapeLink });
 };
 
-const regionHandlerGetShapeByRegionId = async function (req, res) {
+const regionHandlerGetShapeByRegionId = async function (req, res, _next) {
   await regionIdQuerySchema.validateAsync(req.params, {
     abortEarly: false,
   });
@@ -98,7 +98,7 @@ const regionHandlerGetShapeByRegionId = async function (req, res) {
   res.end();
 };
 
-const regionHandlerPatch = async function (req, res) {
+const regionHandlerPatch = async function (req, res, _next) {
   await regionIdQuerySchema.validateAsync(req.params, {
     abortEarly: false,
   });

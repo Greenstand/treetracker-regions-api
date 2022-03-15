@@ -11,8 +11,6 @@ class CollectionService {
   }
 
   async createFeatureCollection(featureCollection) {
-    const createNewRegionsPromises = [];
-
     const { features } = featureCollection.shape;
 
     try {
@@ -26,7 +24,7 @@ class CollectionService {
         collectionObject,
       );
 
-      features.forEach((feature) => {
+      const createNewRegionsPromises = features.map((feature) => {
         const {
           geometry: { coordinates, type },
           properties,
@@ -47,7 +45,7 @@ class CollectionService {
           properties,
           collection_id: collection.id,
         });
-        createNewRegionsPromises.push(this._region.createRegion(regionObject));
+        return this._region.createRegion(regionObject);
       });
 
       const result = await Promise.all(createNewRegionsPromises);

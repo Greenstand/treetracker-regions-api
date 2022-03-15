@@ -1,4 +1,6 @@
 exports.seed = async function (knex) {
-  await knex('region').del();
-  await knex('collection').del();
+  await knex.raw(`
+    DELETE FROM region;
+    DELETE FROM collection;
+  `);
 };

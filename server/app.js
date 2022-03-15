@@ -1,16 +1,13 @@
 const express = require('express');
-const Sentry = require('@sentry/node');
 const HttpError = require('./utils/HttpError');
 const regionRouter = require('./routes/regionRoutes');
 const collectionRouter = require('./routes/collectionRoutes');
 const uploadRouter = require('./routes/uploadRoutes');
 const { errorHandler } = require('./handlers/utils');
 const helper = require('./handlers/utils');
-const config = require('../config/config');
 
 const app = express();
 
-Sentry.init({ dsn: config.sentry_dsn });
 
 /*
  * Check request

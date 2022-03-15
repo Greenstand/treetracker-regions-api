@@ -23,7 +23,9 @@
     "test-watch-debug": "NODE_ENV=test NODE_LOG_LEVEL=debug mocha -r dotenv/config --env dotenv_config_path=.env.test --timeout 10000 -w -b --ignore './server/repositories/**/*.spec.js'  './server/setup.js' './server/**/*.spec.js' './__tests__/seed.spec.js' './__tests__/supertest.js'",
     "prettier-fix": "prettier ./ --write",
     "db-migrate-ci": "cd database; db-migrate up",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "db-migrate-dev": "cd database; echo \"Migrating dev\"; db-migrate --env dev up; echo \"Migrating integration\";  db-migrate --env integration up",
+    "seed-dev": "NODE_ENV=development knex seed:run"
   },
   "keywords": [
     "ecology"
@@ -32,6 +34,7 @@
   "license": "GPL-3.0-or-later",
   "dependencies": {
     "@sentry/node": "^5.1.0",
+    "chance": "^1.1.8",
     "dotenv": "^8.2.0",
     "expect": "^26.4.2",
     "expect-runtime": "^0.7.0",

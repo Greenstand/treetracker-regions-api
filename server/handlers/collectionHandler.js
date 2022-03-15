@@ -23,7 +23,7 @@ const collectionGetQuerySchema = Joi.object({
   offset: Joi.number().integer().greater(-1),
 }).unknown(false);
 
-const collectionHandlerGet = async function (req, res) {
+const collectionHandlerGet = async function (req, res, _next) {
   await collectionGetQuerySchema.validateAsync(req.query, {
     abortEarly: false,
   });
@@ -62,7 +62,7 @@ const collectionHandlerGet = async function (req, res) {
     .json({ collections, links, query: { count, ...limitOptions, ...filter } });
 };
 
-const collectionHandlerGetByCollectionId = async function (req, res) {
+const collectionHandlerGetByCollectionId = async function (req, res, _next) {
   await collectionIdQuerySchema.validateAsync(req.params, {
     abortEarly: false,
   });
@@ -83,7 +83,7 @@ const collectionHandlerGetByCollectionId = async function (req, res) {
   res.status(200).json({ collection });
 };
 
-const collectionHandlerPatch = async function (req, res) {
+const collectionHandlerPatch = async function (req, res, _next) {
   await collectionIdQuerySchema.validateAsync(req.params, {
     abortEarly: false,
   });
