@@ -1,3 +1,24 @@
+# [1.2.0](https://github.com/Greenstand/treetracker-regions-api/compare/v1.1.1...v1.2.0) (2022-03-15)
+
+
+### Bug Fixes
+
+* add geometry type check ([36a86c3](https://github.com/Greenstand/treetracker-regions-api/commit/36a86c32130836ee8469c1e9f774396856e525da))
+* add lint check to pre commit ([6507191](https://github.com/Greenstand/treetracker-regions-api/commit/650719143dbf47bf3cbaa54603d519d10e4f453a))
+* add region and collection model ([f21d172](https://github.com/Greenstand/treetracker-regions-api/commit/f21d172098edb2526d01dbaadd532f6a53ec66dd))
+* add spec ([7200612](https://github.com/Greenstand/treetracker-regions-api/commit/7200612c711770649a83c82d8f383072c2bdcc80))
+* add tests ([2081673](https://github.com/Greenstand/treetracker-regions-api/commit/20816732877c19656bbfe1642ee524d875304a5f))
+* linting ([818998d](https://github.com/Greenstand/treetracker-regions-api/commit/818998dd11e9afd065bdbee7eaebf255452cde83))
+* linting and empty tests ([df5a4f9](https://github.com/Greenstand/treetracker-regions-api/commit/df5a4f907f11a037da4cf741af78ef519c1941a6))
+* merge conflicts ([7872e2d](https://github.com/Greenstand/treetracker-regions-api/commit/7872e2d27b8c3bd0fa003bf9cb832dc5d50c14e0))
+* remove knex file from database folder ([a635b1c](https://github.com/Greenstand/treetracker-regions-api/commit/a635b1c18070d229d2f4653e29b5ab316ac48c29))
+* update /upload POST payload ([766f3ff](https://github.com/Greenstand/treetracker-regions-api/commit/766f3ff2748286cb25b94c1dcd0f4959cb5dd1b4))
+
+
+### Features
+
+* add pagination links and query params to GET responses ([e703177](https://github.com/Greenstand/treetracker-regions-api/commit/e703177e18e40ad43cddba792c784a6dee479bfa))
+
 ## [1.1.1](https://github.com/Greenstand/treetracker-regions-api/compare/v1.1.0...v1.1.1) (2022-03-13)
 
 ### Bug Fixes
