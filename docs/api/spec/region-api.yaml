@@ -16,10 +16,52 @@ paths:
               schema:
                 type: object
                 properties:
-                  region:
+                  regions:
                     $ref: '#/components/schemas/Region'
+                  links:
+                    type: object
+                    properties:
+                      next:
+                        type: string
+                      prev:
+                        type: string
+                  query:
+                    type: object
+                    properties:
+                      count:
+                        type: integer
+                      limit:
+                        type: integer
+                      offset:
+                        type: integer
       operationId: get-regions
       description: Get list of all region descriptions
+      parameters:
+        - schema:
+            type: string
+            format: uuid
+          in: query
+          name: owner_id
+        - schema:
+            type: string
+          in: query
+          name: name
+        - schema:
+            type: boolean
+          in: query
+          name: show_on_org_map
+        - schema:
+            type: boolean
+          in: query
+          name: calculate_statistics
+        - schema:
+            type: integer
+          in: query
+          name: limit
+        - schema:
+            type: integer
+          in: query
+          name: offset
     parameters: []
   '/region/:region_id':
     get:
@@ -78,11 +120,44 @@ paths:
               schema:
                 type: object
                 properties:
-                  collection:
+                  collections:
                     $ref: '#/components/schemas/Collection'
+                  links:
+                    type: object
+                    properties:
+                      next:
+                        type: string
+                      prev:
+                        type: string
+                  query:
+                    type: object
+                    properties:
+                      count:
+                        type: integer
+                      limit:
+                        type: integer
+                      offset:
+                        type: integer
       operationId: get-collections
       description: ''
-      parameters: []
+      parameters:
+        - schema:
+            type: integer
+          in: query
+          name: limit
+        - schema:
+            type: integer
+          in: query
+          name: offset
+        - schema:
+            type: string
+          in: query
+          name: name
+        - schema:
+            type: string
+            format: uuid
+          in: query
+          name: owner_id
     parameters: []
   '/collection/:collection_id':
     parameters: []
@@ -156,7 +231,7 @@ paths:
                 owner_id:
                   type: string
                   format: uuid
-                name:
+                region_name_property:
                   type: string
                 show_on_org_map:
                   type: boolean
@@ -164,9 +239,11 @@ paths:
                   type: boolean
                 shape:
                   type: object
+                collection_name:
+                  type: string
               required:
                 - owner_id
-                - name
+                - region_name_property
                 - shape
             examples: {}
     parameters: []
