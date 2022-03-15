@@ -3,6 +3,7 @@ const log = require('loglevel');
 const Collection = require('../models/Collection');
 const Region = require('../models/Region');
 const Session = require('../models/Session');
+const { checkGeometryType } = require('../utils/helper');
 
 class CollectionService {
   constructor() {
@@ -33,6 +34,8 @@ class CollectionService {
         } = feature;
 
         const geometry = { type, coordinates };
+
+        checkGeometryType(geometry.type);
 
         if (geometry.type === 'Polygon') {
           geometry.type = 'MultiPolygon';

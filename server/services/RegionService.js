@@ -2,6 +2,7 @@ const log = require('loglevel');
 
 const Region = require('../models/Region');
 const Session = require('../models/Session');
+const { checkGeometryType } = require('../utils/helper');
 
 class RegionService {
   constructor() {
@@ -18,6 +19,8 @@ class RegionService {
       const featureObject = { ...feature };
       featureObject.properties = feature.shape.properties;
       const geometry = { ...feature.shape.geometry };
+
+      checkGeometryType(geometry.type);
 
       if (geometry.type === 'Polygon') {
         geometry.type = 'MultiPolygon';
