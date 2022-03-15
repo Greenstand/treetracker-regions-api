@@ -22,6 +22,7 @@ describe('Region API tests.', () => {
   it('GET /region', async () => {
     const res = await request(server).get(`/region`).expect(200);
     expect(res.body.regions.length).to.equal(1);
+    expect(res.body).to.have.keys(['regions', 'links', 'query']);
     expect(res.body.regions)
       .to.be.an('array')
       .that.contains.something.like({

@@ -63,8 +63,12 @@ class CollectionService {
     }
   }
 
-  async getCollections(filter = {}) {
-    return this._collection.getCollections(filter);
+  async getCollections(filter, limitOptions) {
+    return this._collection.getCollections(filter, limitOptions);
+  }
+
+  async getCollectionsCount(filter) {
+    return this._collection.getCollectionsCount(filter);
   }
 
   async getCollectionById(id) {

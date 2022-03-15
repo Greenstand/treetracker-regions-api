@@ -1,6 +1,10 @@
 const Joi = require('joi');
+const log = require('loglevel');
 const CollectionService = require('../services/CollectionService');
-const { addShapeUrlToRegionArrayObjects } = require('../utils/helper');
+const {
+  addShapeUrlToRegionArrayObjects,
+  generatePrevAndNext,
+} = require('../utils/helper');
 const HttpError = require('../utils/HttpError');
 
 const collectionIdQuerySchema = Joi.object({
@@ -12,11 +16,50 @@ const collectionPatchQuerySchema = Joi.object({
   name: Joi.string(),
 }).unknown(false);
 
+const collectionGetQuerySchema = Joi.object({
+  owner_id: Joi.string().uuid(),
+  name: Joi.string(),
+  limit: Joi.number().integer().greater(0).less(501),
+  offset: Joi.number().integer().greater(-1),
+}).unknown(false);
+
 const collectionHandlerGet = async function (req, res) {
-  // filters here
+  await collectionGetQuerySchema.validateAsync(req.query, {
+    abortEarly: false,
+  });
+
+  const filter = { ...req.query };
+  const limitOptions = {};
+
+  const defaultRange = { limit: 100, offset: 0 };
+  limitOptions.limit = +filter.limit || defaultRange.limit;
+  limitOptions.offset = +filter.offset || defaultRange.offset;
+
+  delete filter.limit;
+  delete filter.offset;
+
+  log.debug('filter', filter);
+  log.debug('limitOptions', limitOptions);
+
   const collectionService = new CollectionService();
-  const collections = await collectionService.getCollections(req.query);
-  res.status(200).json({ collections });
+  const collections = await collectionService.getCollections(
+    filter,
+    limitOptions,
+  );
+  const count = await collectionService.getCollectionsCount(filter);
+
+  const url = 'collection';
+
+  const links = generatePrevAndNext({
+    url,
+    count,
+    limitOptions,
+    queryObject: { ...filter, ...limitOptions },
+  });
+
+  res
+    .status(200)
+    .json({ collections, links, query: { count, ...limitOptions, ...filter } });
 };
 
 const collectionHandlerGetByCollectionId = async function (req, res) {

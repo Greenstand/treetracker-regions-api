@@ -25,6 +25,7 @@ describe('Collection API tests.', () => {
   it('GET /collection', async () => {
     const res = await request(server).get(`/collection`).expect(200);
     expect(res.body.collections.length).to.equal(1);
+    expect(res.body).to.have.keys(['collections', 'links', 'query']);
     expect(res.body.collections)
       .to.be.an('array')
       .that.contains.something.like({

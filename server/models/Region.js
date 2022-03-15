@@ -34,8 +34,12 @@ class Region {
     return this._regionRepository.getShapeByRegionId(id);
   }
 
-  async getRegions(filter = {}) {
-    return this._regionRepository.getByFilter(filter);
+  async getRegions(filter = {}, limitOptions) {
+    return this._regionRepository.getByFilter(filter, limitOptions);
+  }
+
+  async getRegionsCount(filter = {}) {
+    return this._regionRepository.countByFilter(filter);
   }
 
   async getRegionById(id) {

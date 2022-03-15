@@ -12,8 +12,12 @@ class Collection {
     });
   }
 
-  async getCollections(filter) {
-    return this._collectionRepository.getByFilter(filter);
+  async getCollections(filter = {}, limitOptions) {
+    return this._collectionRepository.getByFilter(filter, limitOptions);
+  }
+
+  async getCollectionsCount(filter = {}) {
+    return this._collectionRepository.countByFilter(filter);
   }
 
   async createCollection(collectionObject) {

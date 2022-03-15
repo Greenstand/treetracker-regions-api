@@ -41,8 +41,12 @@ class RegionService {
     }
   }
 
-  async getRegions(filter) {
-    return this._region.getRegions(filter);
+  async getRegions(filter, limitOptions) {
+    return this._region.getRegions(filter, limitOptions);
+  }
+
+  async getRegionsCount(filter) {
+    return this._region.getRegionsCount(filter);
   }
 
   async getRegionById(id) {
