@@ -1,8 +1,7 @@
-const log = require('loglevel');
-
 const Collection = require('../models/Collection');
 const Region = require('../models/Region');
 const Session = require('../models/Session');
+const { checkGeometryType } = require('../utils/helper');
 
 class CollectionService {
   constructor() {
@@ -12,26 +11,28 @@ class CollectionService {
   }
 
   async createFeatureCollection(featureCollection) {
-
     const { features } = featureCollection.shape;
 
     try {
+      await this._session.beginTransaction();
       // create collection instance
       const collectionObject = Collection.CollectionToCreate({
         ...featureCollection,
       });
 
-      await this._collection.createCollection(collectionObject);
+      const collection = await this._collection.createCollection(
+        collectionObject,
+      );
 
-      const collection_id = collectionObject.id;
-
-      const createRegionsPromises = features.map( feature => {
+      const createNewRegionsPromises = features.map((feature) => {
         const {
           geometry: { coordinates, type },
           properties,
         } = feature;
 
         const geometry = { type, coordinates };
+
+        checkGeometryType(geometry.type);
 
         if (geometry.type === 'Polygon') {
           geometry.type = 'MultiPolygon';
@@ -42,15 +43,17 @@ class CollectionService {
           ...featureCollection,
           shape: geometry,
           properties,
-          collection_id,
+          collection_id: collection.id,
         });
         return this._region.createRegion(regionObject);
-      })
+      });
 
-      return Promise.all(createRegionsPromises);
+      const result = await Promise.all(createNewRegionsPromises);
+
+      await this._session.commitTransaction();
+
+      return result;
     } catch (e) {
-      log.info('Error:');
-      log.info(e);
       if (this._session.isTransactionInProgress()) {
         await this._session.rollbackTransaction();
       }
@@ -58,8 +61,12 @@ class CollectionService {
     }
   }
 
-  async getCollections(filter = {}) {
-    return this._collection.getCollections(filter);
+  async getCollections(filter, limitOptions) {
+    return this._collection.getCollections(filter, limitOptions);
+  }
+
+  async getCollectionsCount(filter) {
+    return this._collection.getCollectionsCount(filter);
   }
 
   async getCollectionById(id) {

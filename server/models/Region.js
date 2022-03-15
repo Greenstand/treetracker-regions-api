@@ -1,4 +1,3 @@
-const { v4: uuidv4 } = require('uuid');
 const RegionRepository = require('../repositories/RegionRepository');
 
 class Region {
@@ -7,17 +6,20 @@ class Region {
     this._regionRepository = new RegionRepository(session);
   }
 
-  static RegionToCreate({
+  static Region({
+    id,
     owner_id,
-    collection_id = null,
+    collection_id,
     name,
     shape,
     properties,
-    show_on_org_map = null,
-    calculate_statistics = null,
+    show_on_org_map,
+    calculate_statistics,
+    created_at,
+    updated_at,
   }) {
     return Object.freeze({
-      id: uuidv4(),
+      id,
       owner_id,
       collection_id,
       name,
@@ -25,8 +27,28 @@ class Region {
       properties,
       show_on_org_map,
       calculate_statistics,
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
+      created_at,
+      updated_at,
+    });
+  }
+
+  static RegionToCreate({
+    owner_id,
+    collection_id = null,
+    region_name_property,
+    shape,
+    properties,
+    show_on_org_map = null,
+    calculate_statistics = null,
+  }) {
+    return Object.freeze({
+      owner_id,
+      collection_id,
+      name: properties[region_name_property],
+      shape,
+      properties,
+      show_on_org_map,
+      calculate_statistics,
     });
   }
 
@@ -38,12 +60,22 @@ class Region {
     return this._regionRepository.getShapeByRegionId(id);
   }
 
-  async getRegions(filter = {}) {
-    return this._regionRepository.getByFilter(filter);
+  async getRegions(filter = {}, limitOptions) {
+    const regions = await this._regionRepository.getByFilter(
+      filter,
+      limitOptions,
+    );
+
+    return regions.map((row) => this.constructor.Region(row));
+  }
+
+  async getRegionsCount(filter = {}) {
+    return this._regionRepository.countByFilter(filter);
   }
 
   async getRegionById(id) {
-    return this._regionRepository.getById(id);
+    const region = await this._regionRepository.getById(id);
+    return this.constructor.Region(region);
   }
 
   async updateRegion(regionObject) {

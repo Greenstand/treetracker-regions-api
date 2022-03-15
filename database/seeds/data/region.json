@@ -1,0 +1,20 @@
+{
+  "id": "761f3127-bf71-4b7b-8b08-7414a3c55e62",
+  "owner_id": "2898d0fb-49a0-44f7-8efa-0a5d146d13e6",
+  "name": "Test Region",
+  "show_on_org_map": true,
+  "calculate_statistics": true,
+  "shape": {
+    "type": "MultiPolygon",
+    "coordinates": [
+      [
+        [
+          [1, 2],
+          [2, 3],
+          [0, 3],
+          [2, 8]
+        ]
+      ]
+    ]
+  }
+}

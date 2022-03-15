@@ -10,11 +10,13 @@ class CollectionRepository extends BaseRepository {
   async getById(id) {
     return this._session
       .getDB()(this._tableName)
-      .innerJoin('region', 'collection.id', '=', 'region.collection_id')
+      .innerJoin('region', 'collection.id', '=', 'region.collection_id') // use left join instead??
       .select(
         'collection.id',
         'collection.name',
         'collection.owner_id',
+        'collection.created_at',
+        'collection.updated_at',
         this._session.getDB().raw(`json_agg(region.*) as regions`),
       )
       .groupBy('collection.id')

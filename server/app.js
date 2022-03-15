@@ -31,7 +31,7 @@ app.use(
 );
 
 app.use(express.urlencoded({ extended: false }));
-app.use(express.json({ limit: '10mb' }));
+app.use(express.json({ limit: '25mb' }));
 
 // routers
 app.use('/region', regionRouter);

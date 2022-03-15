@@ -1,6 +1,10 @@
 const Joi = require('joi');
+const log = require('loglevel');
 const CollectionService = require('../services/CollectionService');
-const { addShapeUrlToRegionArrayObjects } = require('../utils/helper');
+const {
+  addShapeUrlToRegionArrayObjects,
+  generatePrevAndNext,
+} = require('../utils/helper');
 const HttpError = require('../utils/HttpError');
 
 const collectionIdQuerySchema = Joi.object({
@@ -12,35 +16,76 @@ const collectionPatchQuerySchema = Joi.object({
   name: Joi.string(),
 }).unknown(false);
 
-const collectionHandlerGet = async function (req, res) {
-  // filters here
+const collectionGetQuerySchema = Joi.object({
+  owner_id: Joi.string().uuid(),
+  name: Joi.string(),
+  limit: Joi.number().integer().greater(0).less(501),
+  offset: Joi.number().integer().greater(-1),
+}).unknown(false);
+
+const collectionHandlerGet = async function (req, res, _next) {
+  await collectionGetQuerySchema.validateAsync(req.query, {
+    abortEarly: false,
+  });
+
+  const filter = { ...req.query };
+  const limitOptions = {};
+
+  const defaultRange = { limit: 100, offset: 0 };
+  limitOptions.limit = +filter.limit || defaultRange.limit;
+  limitOptions.offset = +filter.offset || defaultRange.offset;
+
+  delete filter.limit;
+  delete filter.offset;
+
+  log.debug('filter', filter);
+  log.debug('limitOptions', limitOptions);
+
   const collectionService = new CollectionService();
-  const collections = await collectionService.getCollections(req.query);
-  res.status(200).json({ collections });
+  const collections = await collectionService.getCollections(
+    filter,
+    limitOptions,
+  );
+  const count = await collectionService.getCollectionsCount(filter);
+
+  const url = 'collection';
+
+  const links = generatePrevAndNext({
+    url,
+    count,
+    limitOptions,
+    queryObject: { ...filter, ...limitOptions },
+  });
+
+  res
+    .status(200)
+    .json({ collections, links, query: { count, ...limitOptions, ...filter } });
 };
 
-const collectionHandlerGetByCollectionId = async function (req, res) {
+const collectionHandlerGetByCollectionId = async function (req, res, _next) {
   await collectionIdQuerySchema.validateAsync(req.params, {
     abortEarly: false,
   });
 
   const collectionService = new CollectionService();
-  const [collection] = await collectionService.getCollectionById(
+  const collection = await collectionService.getCollectionById(
     req.params.collection_id,
   );
 
-  if (!collection)
+  if (!collection.id)
     throw new HttpError(
       404,
       `collection with ${req.params.collection_id} not found`,
     );
 
-  collection.regions = addShapeUrlToRegionArrayObjects(collection.regions);
+  const modifiedRegions = addShapeUrlToRegionArrayObjects(collection.regions);
 
-  res.status(200).json({ collection });
+  res
+    .status(200)
+    .json({ collection: { ...collection, regions: modifiedRegions } });
 };
 
-const collectionHandlerPatch = async function (req, res) {
+const collectionHandlerPatch = async function (req, res, _next) {
   await collectionIdQuerySchema.validateAsync(req.params, {
     abortEarly: false,
   });

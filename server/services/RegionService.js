@@ -1,7 +1,6 @@
-const log = require('loglevel');
-
 const Region = require('../models/Region');
 const Session = require('../models/Session');
+const { checkGeometryType } = require('../utils/helper');
 
 class RegionService {
   constructor() {
@@ -15,9 +14,12 @@ class RegionService {
 
   async createFeature(feature) {
     try {
+      await this._session.beginTransaction();
       const featureObject = { ...feature };
       featureObject.properties = feature.shape.properties;
       const geometry = { ...feature.shape.geometry };
+
+      checkGeometryType(geometry.type);
 
       if (geometry.type === 'Polygon') {
         geometry.type = 'MultiPolygon';
@@ -28,11 +30,10 @@ class RegionService {
       const newRegion = await this._region.createRegion(
         Region.RegionToCreate(featureObject),
       );
+      await this._session.commitTransaction();
 
       return [newRegion];
     } catch (e) {
-      log.info('Error:');
-      log.info(e);
       if (this._session.isTransactionInProgress()) {
         await this._session.rollbackTransaction();
       }
@@ -40,8 +41,12 @@ class RegionService {
     }
   }
 
-  async getRegions(filter) {
-    return this._region.getRegions(filter);
+  async getRegions(filter, limitOptions) {
+    return this._region.getRegions(filter, limitOptions);
+  }
+
+  async getRegionsCount(filter) {
+    return this._region.getRegionsCount(filter);
   }
 
   async getRegionById(id) {
