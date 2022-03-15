@@ -13,14 +13,14 @@ const {
 const feature = require('../database/seeds/data/feature.json');
 const featureCollection = require('../database/seeds/data/featureCollection.json');
 
-describe('Collection API tests.', () => {
+describe('Upload API tests.', () => {
   beforeEach(async () => {
     await databaseCleaner(knex);
   });
 
   const regionObject = {
     owner_id: '3f804833-0a22-4449-9214-9979f803167a',
-    name: 'Test',
+    region_name_property: 'name',
     show_on_org_map: true,
     calculate_statistics: false,
   };
@@ -33,16 +33,21 @@ describe('Collection API tests.', () => {
 
     expect(res.body).to.be.an('array').that.contains.something.like({
       owner_id: regionObject.owner_id,
-      name: regionObject.name,
+      name: feature.properties[regionObject.region_name_property],
       show_on_org_map: regionObject.show_on_org_map,
       calculate_statistics: regionObject.calculate_statistics,
     });
   });
 
   it('POST /upload  -- featureCollection', async () => {
+    const collection_name = 'Test Feature Collection';
     const res = await request(server)
       .post(`/upload`)
-      .send({ ...regionObject, shape: featureCollection })
+      .send({
+        ...regionObject,
+        shape: featureCollection,
+        collection_name,
+      })
       .expect(201);
 
     expect(res.body.length).to.equal(featureCollection.features.length);
@@ -53,7 +58,7 @@ describe('Collection API tests.', () => {
       .to.be.an('array')
       .that.contains.something.like({
         owner_id: regionObject.owner_id,
-        // name: regionObject.collection_name
+        name: collection_name,
       });
   });
 });

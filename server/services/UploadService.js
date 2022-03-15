@@ -1,4 +1,3 @@
-const log = require('loglevel');
 const RegionService = require('./RegionService');
 const CollectionService = require('./CollectionService');
 const HttpError = require('../utils/HttpError');
@@ -10,27 +9,21 @@ class UploadService {
   }
 
   async uploadRegion(regionObject) {
-    try {
-      switch (regionObject.shape.type) {
-        case 'FeatureCollection': {
-          return this._collectionService.createFeatureCollection(regionObject);
-        }
-
-        case 'Feature': {
-          return this._regionService.createFeature(regionObject);
-        }
-
-        default: {
-          throw new HttpError(
-            422,
-            'Only GeoJson of types FeatureCollection and Feature are currently supported',
-          );
-        }
+    switch (regionObject.shape.type) {
+      case 'FeatureCollection': {
+        return this._collectionService.createFeatureCollection(regionObject);
       }
-    } catch (e) {
-      log.info('Error:');
-      log.info(e);
-      throw e;
+
+      case 'Feature': {
+        return this._regionService.createFeature(regionObject);
+      }
+
+      default: {
+        throw new HttpError(
+          422,
+          'Only GeoJson of types FeatureCollection and Feature are currently supported',
+        );
+      }
     }
   }
 }

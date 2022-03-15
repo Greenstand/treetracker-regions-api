@@ -1,5 +1,3 @@
-const log = require('loglevel');
-
 const Region = require('../models/Region');
 const Session = require('../models/Session');
 const { checkGeometryType } = require('../utils/helper');
@@ -16,6 +14,7 @@ class RegionService {
 
   async createFeature(feature) {
     try {
+      await this._session.beginTransaction();
       const featureObject = { ...feature };
       featureObject.properties = feature.shape.properties;
       const geometry = { ...feature.shape.geometry };
@@ -31,11 +30,10 @@ class RegionService {
       const newRegion = await this._region.createRegion(
         Region.RegionToCreate(featureObject),
       );
+      await this._session.commitTransaction();
 
       return [newRegion];
     } catch (e) {
-      log.info('Error:');
-      log.info(e);
       if (this._session.isTransactionInProgress()) {
         await this._session.rollbackTransaction();
       }

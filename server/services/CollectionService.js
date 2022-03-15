@@ -1,5 +1,3 @@
-const log = require('loglevel');
-
 const Collection = require('../models/Collection');
 const Region = require('../models/Region');
 const Session = require('../models/Session');
@@ -18,14 +16,15 @@ class CollectionService {
     const { features } = featureCollection.shape;
 
     try {
+      await this._session.beginTransaction();
       // create collection instance
       const collectionObject = Collection.CollectionToCreate({
         ...featureCollection,
       });
 
-      await this._collection.createCollection(collectionObject);
-
-      const collection_id = collectionObject.id;
+      const collection = await this._collection.createCollection(
+        collectionObject,
+      );
 
       features.forEach((feature) => {
         const {
@@ -46,15 +45,17 @@ class CollectionService {
           ...featureCollection,
           shape: geometry,
           properties,
-          collection_id,
+          collection_id: collection.id,
         });
         createNewRegionsPromises.push(this._region.createRegion(regionObject));
       });
 
-      return Promise.all(createNewRegionsPromises);
+      const result = await Promise.all(createNewRegionsPromises);
+
+      await this._session.commitTransaction();
+
+      return result;
     } catch (e) {
-      log.info('Error:');
-      log.info(e);
       if (this._session.isTransactionInProgress()) {
         await this._session.rollbackTransaction();
       }

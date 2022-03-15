@@ -1,4 +1,3 @@
-const { v4: uuidv4 } = require('uuid');
 const RegionRepository = require('../repositories/RegionRepository');
 
 class Region {
@@ -10,23 +9,20 @@ class Region {
   static RegionToCreate({
     owner_id,
     collection_id = null,
-    name,
+    region_name_property,
     shape,
     properties,
     show_on_org_map = null,
     calculate_statistics = null,
   }) {
     return Object.freeze({
-      id: uuidv4(),
       owner_id,
       collection_id,
-      name,
+      name: properties[region_name_property],
       shape,
       properties,
       show_on_org_map,
       calculate_statistics,
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
     });
   }
 

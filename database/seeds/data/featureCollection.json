@@ -4,8 +4,7 @@
     {
       "type": "Feature",
       "properties": {
-        "ADMIN": "Aruba",
-        "ISO_A3": "ABW"
+        "name": "FeatureCollection2"
       },
       "geometry": {
         "type": "Polygon",
@@ -44,8 +43,7 @@
     {
       "type": "Feature",
       "properties": {
-        "ADMIN": "Aruba",
-        "ISO_A3": "ABW"
+        "name": "FeatureCollection1"
       },
       "geometry": {
         "type": "MultiPolygon",

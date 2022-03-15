@@ -6,7 +6,8 @@ const HttpError = require('../utils/HttpError');
 
 const uploadPostSchema = Joi.object({
   owner_id: Joi.string().uuid().required(),
-  name: Joi.string().required(),
+  collection_name: Joi.string(),
+  region_name_property: Joi.string().required(),
   show_on_org_map: Joi.boolean(),
   calculate_statistics: Joi.boolean(),
   shape: Joi.any().required(), // geojson
@@ -20,6 +21,12 @@ const uploadHandlerPost = async (req, res) => {
   if (!gjv(req.body.shape)) {
     throw new HttpError(400, 'Invalid GeoJson File Upload.');
   }
+
+  if (req.body.shape.type === 'FeatureCollection' && !req.body.collection_name)
+    throw new HttpError(
+      422,
+      'collection_name is required for FeatureCollections',
+    );
 
   const uploadService = new UploadService();
   const uploadResult = await uploadService.uploadRegion(req.body);

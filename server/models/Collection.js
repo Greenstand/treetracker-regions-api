@@ -1,4 +1,3 @@
-const { v4: uuidv4 } = require('uuid');
 const CollectionRepository = require('../repositories/CollectionRepository');
 
 class Collection {
@@ -6,13 +5,10 @@ class Collection {
     this._collectionRepository = new CollectionRepository(session);
   }
 
-  static CollectionToCreate({ owner_id, name }) {
+  static CollectionToCreate({ owner_id, collection_name }) {
     return Object.freeze({
-      id: uuidv4(),
       owner_id,
-      name,
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
+      name: collection_name,
     });
   }
 

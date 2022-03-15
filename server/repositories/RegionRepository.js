@@ -22,30 +22,24 @@ class RegionRepository extends BaseRepository {
     const {
       calculate_statistics,
       collection_id,
-      created_at,
-      id,
       name,
       owner_id,
       properties,
       shape,
       show_on_org_map,
-      updated_at,
     } = object;
 
     const result = await this._session.getDB().raw(
       `INSERT INTO region(
-          id, 
           name, 
           owner_id, 
           show_on_org_map, 
           calculate_statistics, 
           collection_id, 
           properties,
-          created_at, 
-          updated_at,
           shape
         )
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ST_SETSRID(ST_GeomFromGeoJSON(?), 4326))
+        VALUES (?, ?, ?, ?, ?, ?, ST_SETSRID(ST_GeomFromGeoJSON(?), 4326))
         RETURNING 
           calculate_statistics,
           collection_id,
@@ -57,15 +51,12 @@ class RegionRepository extends BaseRepository {
           show_on_org_map,
           updated_at;`,
       [
-        id,
         name,
         owner_id,
         show_on_org_map,
         calculate_statistics,
         collection_id,
         properties,
-        created_at,
-        updated_at,
         shape,
       ],
     );
