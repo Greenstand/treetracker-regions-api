@@ -6,6 +6,32 @@ class Region {
     this._regionRepository = new RegionRepository(session);
   }
 
+  static Region({
+    id,
+    owner_id,
+    collection_id,
+    name,
+    shape,
+    properties,
+    show_on_org_map,
+    calculate_statistics,
+    created_at,
+    updated_at,
+  }) {
+    return Object.freeze({
+      id,
+      owner_id,
+      collection_id,
+      name,
+      shape,
+      properties,
+      show_on_org_map,
+      calculate_statistics,
+      created_at,
+      updated_at,
+    });
+  }
+
   static RegionToCreate({
     owner_id,
     collection_id = null,
@@ -35,7 +61,12 @@ class Region {
   }
 
   async getRegions(filter = {}, limitOptions) {
-    return this._regionRepository.getByFilter(filter, limitOptions);
+    const regions = await this._regionRepository.getByFilter(
+      filter,
+      limitOptions,
+    );
+
+    return regions.map((row) => this.constructor.Region(row));
   }
 
   async getRegionsCount(filter = {}) {
@@ -43,7 +74,8 @@ class Region {
   }
 
   async getRegionById(id) {
-    return this._regionRepository.getById(id);
+    const region = await this._regionRepository.getById(id);
+    return this.constructor.Region(region);
   }
 
   async updateRegion(regionObject) {

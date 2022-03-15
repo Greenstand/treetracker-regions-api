@@ -5,6 +5,17 @@ class Collection {
     this._collectionRepository = new CollectionRepository(session);
   }
 
+  static Collection({ id, owner_id, name, regions, created_at, updated_at }) {
+    return Object.freeze({
+      id,
+      owner_id,
+      name,
+      regions,
+      created_at,
+      updated_at,
+    });
+  }
+
   static CollectionToCreate({ owner_id, collection_name }) {
     return Object.freeze({
       owner_id,
@@ -13,7 +24,12 @@ class Collection {
   }
 
   async getCollections(filter = {}, limitOptions) {
-    return this._collectionRepository.getByFilter(filter, limitOptions);
+    const collections = await this._collectionRepository.getByFilter(
+      filter,
+      limitOptions,
+    );
+
+    return collections.map((row) => this.constructor.Collection(row));
   }
 
   async getCollectionsCount(filter = {}) {
@@ -25,7 +41,8 @@ class Collection {
   }
 
   async getCollectionById(id) {
-    return this._collectionRepository.getById(id);
+    const [collection = {}] = await this._collectionRepository.getById(id);
+    return this.constructor.Collection(collection);
   }
 
   async updateCollection(collectionObject) {

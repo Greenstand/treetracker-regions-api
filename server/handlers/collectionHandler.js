@@ -68,19 +68,21 @@ const collectionHandlerGetByCollectionId = async function (req, res, _next) {
   });
 
   const collectionService = new CollectionService();
-  const [collection] = await collectionService.getCollectionById(
+  const collection = await collectionService.getCollectionById(
     req.params.collection_id,
   );
 
-  if (!collection)
+  if (!collection.id)
     throw new HttpError(
       404,
       `collection with ${req.params.collection_id} not found`,
     );
 
-  collection.regions = addShapeUrlToRegionArrayObjects(collection.regions);
+  const modifiedRegions = addShapeUrlToRegionArrayObjects(collection.regions);
 
-  res.status(200).json({ collection });
+  res
+    .status(200)
+    .json({ collection: { ...collection, regions: modifiedRegions } });
 };
 
 const collectionHandlerPatch = async function (req, res, _next) {
