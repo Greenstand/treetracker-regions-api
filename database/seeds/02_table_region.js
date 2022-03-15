@@ -4951,7 +4951,7 @@ const seed = async function (knex) {
     await createRegion(knex, region, geojson.features[i].geometry);
   }
 
-  // // region without a collection
+  // region without a collection
   {
     const i = 2;
     const region = {
