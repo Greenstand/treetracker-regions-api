@@ -1,3 +1,10 @@
+## [1.2.1](https://github.com/Greenstand/treetracker-regions-api/compare/v1.2.0...v1.2.1) (2022-03-16)
+
+
+### Bug Fixes
+
+* update sealed secrets for test and prod ([21872e3](https://github.com/Greenstand/treetracker-regions-api/commit/21872e3ed31a820c32daa3f7cfe322a9181b3dbc))
+
 # [1.2.0](https://github.com/Greenstand/treetracker-regions-api/compare/v1.1.1...v1.2.0) (2022-03-15)
 
 
