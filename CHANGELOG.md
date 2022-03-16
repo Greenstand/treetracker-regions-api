@@ -1,3 +1,10 @@
+## [1.2.2](https://github.com/Greenstand/treetracker-regions-api/compare/v1.2.1...v1.2.2) (2022-03-16)
+
+
+### Bug Fixes
+
+* open cors, fix kustomization ([69e6baf](https://github.com/Greenstand/treetracker-regions-api/commit/69e6bafa23cde2095c83918e6b89d33972541fa3))
+
 ## [1.2.1](https://github.com/Greenstand/treetracker-regions-api/compare/v1.2.0...v1.2.1) (2022-03-16)
 
 
