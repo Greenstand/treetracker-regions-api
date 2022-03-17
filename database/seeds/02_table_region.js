@@ -7,6 +7,7 @@ const chance = new Chance();
 // These constants can be exported to support other seeds and APIs
 // Do not edit!
 //
+const region_one_UUID = '9a8fa051-d8b8-44ff-96eb-cfce4d07bc8c';
 
 const collectionSeed = require('./01_table_collection');
 
@@ -97,7 +98,7 @@ const seed = async function (knex) {
   {
     const i = 2;
     const region = {
-      id: uuid(),
+      id: region_one_UUID,
       name: chance.capitalize(chance.word()),
       owner_id: collectionSeed.collectionOneOwnerId,
       show_on_org_map: true,
