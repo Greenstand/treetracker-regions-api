@@ -8,6 +8,7 @@ spec:
     cors:
     origins:
       - https://admin.treetracker.org
+      - https://beta-admin.treetracker.org
     headers:
       - Content-Type
       - Authorization
