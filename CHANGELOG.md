@@ -1,3 +1,10 @@
+## [1.2.3](https://github.com/Greenstand/treetracker-regions-api/compare/v1.2.2...v1.2.3) (2022-03-20)
+
+
+### Bug Fixes
+
+* cors for beta-admin ([eb6b76c](https://github.com/Greenstand/treetracker-regions-api/commit/eb6b76c718dbbb40e86128287e173b1b5834c7aa))
+
 ## [1.2.2](https://github.com/Greenstand/treetracker-regions-api/compare/v1.2.1...v1.2.2) (2022-03-16)
 
 
