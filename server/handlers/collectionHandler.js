@@ -63,13 +63,11 @@ const collectionHandlerGet = async function (req, res, _next) {
     queryObject: { ...filter, ...limitOptions },
   });
 
-  res
-    .status(200)
-    .json({
-      collections,
-      links,
-      query: { count, ...req.query, ...limitOptions },
-    });
+  res.status(200).json({
+    collections,
+    links,
+    query: { count, ...req.query, ...limitOptions },
+  });
 };
 
 const collectionHandlerGetByCollectionId = async function (req, res, _next) {
