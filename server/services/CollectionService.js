@@ -61,8 +61,8 @@ class CollectionService {
     }
   }
 
-  async getCollections(filter, limitOptions) {
-    return this._collection.getCollections(filter, limitOptions);
+  async getCollections(filter, limitOptions, sortOptions) {
+    return this._collection.getCollections(filter, limitOptions, sortOptions);
   }
 
   async getCollectionsCount(filter) {
