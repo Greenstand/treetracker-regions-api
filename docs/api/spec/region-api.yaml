@@ -62,6 +62,19 @@ paths:
             type: integer
           in: query
           name: offset
+        - schema:
+            type: string
+            enum:
+              - name
+          in: query
+          name: sort_by
+        - schema:
+            type: string
+            enum:
+              - asc
+              - desc
+          in: query
+          name: order
     parameters: []
   '/region/:region_id':
     get:
@@ -158,6 +171,19 @@ paths:
             format: uuid
           in: query
           name: owner_id
+        - schema:
+            type: string
+            enum:
+              - name
+          in: query
+          name: sort_by
+        - schema:
+            type: string
+            enum:
+              - asc
+              - desc
+          in: query
+          name: order
     parameters: []
   '/collection/:collection_id':
     parameters: []
