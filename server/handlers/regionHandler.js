@@ -22,6 +22,8 @@ const regionGetQuerySchema = Joi.object({
   name: Joi.string(),
   show_on_org_map: Joi.boolean(),
   calculate_statistics: Joi.boolean(),
+  sort_by: Joi.string().valid('name'),
+  order: Joi.string().valid('asc', 'desc'),
   limit: Joi.number().integer().greater(0).less(501),
   offset: Joi.number().integer().greater(-1),
 });
@@ -33,6 +35,7 @@ const regionHandlerGet = async function (req, res, _next) {
 
   const filter = { ...req.query };
   const limitOptions = {};
+  const sortOptions = { orderBy: filter.sort_by, order: filter.order };
 
   const defaultRange = { limit: 100, offset: 0 };
   limitOptions.limit = +filter.limit || defaultRange.limit;
@@ -40,12 +43,18 @@ const regionHandlerGet = async function (req, res, _next) {
 
   delete filter.limit;
   delete filter.offset;
+  delete filter.sort_by;
+  delete filter.order;
 
   log.debug('filter', filter);
   log.debug('limitOptions', limitOptions);
 
   const regionService = new RegionService();
-  const regions = await regionService.getRegions(filter, limitOptions);
+  const regions = await regionService.getRegions(
+    filter,
+    limitOptions,
+    sortOptions,
+  );
   const count = await regionService.getRegionsCount(filter);
 
   const updatedResultWithShapeLink = addShapeUrlToRegionArrayObjects(regions);
@@ -62,7 +71,7 @@ const regionHandlerGet = async function (req, res, _next) {
   res.status(200).json({
     regions: updatedResultWithShapeLink,
     links,
-    query: { count, ...limitOptions, ...filter },
+    query: { count, ...req.query, ...limitOptions },
   });
 };
 
