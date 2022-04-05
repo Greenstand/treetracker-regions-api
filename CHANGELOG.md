@@ -1,3 +1,11 @@
+## [1.2.4](https://github.com/Greenstand/treetracker-regions-api/compare/v1.2.3...v1.2.4) (2022-04-05)
+
+
+### Bug Fixes
+
+* add public to knex search path ([6e81e60](https://github.com/Greenstand/treetracker-regions-api/commit/6e81e60a655d4d86489718086e70e8890f9736d8))
+* setup dev password script; remove searchpath ([e9d12b0](https://github.com/Greenstand/treetracker-regions-api/commit/e9d12b014f73fd2423792e9a5162f9f04dae1628))
+
 ## [1.2.3](https://github.com/Greenstand/treetracker-regions-api/compare/v1.2.2...v1.2.3) (2022-03-20)
 
 
