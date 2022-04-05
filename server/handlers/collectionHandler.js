@@ -12,7 +12,7 @@ const collectionIdQuerySchema = Joi.object({
 }).unknown(false);
 
 const collectionPatchQuerySchema = Joi.object({
-  owner_id: Joi.string().uuid(),
+  owner_id: Joi.string().uuid().allow(null),
   name: Joi.string(),
 }).unknown(false);
 

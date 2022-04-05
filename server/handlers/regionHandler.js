@@ -11,7 +11,7 @@ const regionIdQuerySchema = Joi.object({
 }).unknown(false);
 
 const regionPatchQuerySchema = Joi.object({
-  owner_id: Joi.string().uuid(),
+  owner_id: Joi.string().uuid().allow(null),
   name: Joi.string(),
   show_on_org_map: Joi.boolean(),
   calculate_statistics: Joi.boolean(),
