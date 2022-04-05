@@ -1,5 +1,5 @@
 const Region = require('../models/Region');
-const Session = require('../models/Session');
+const Session = require('../database/Session');
 const { checkGeometryType } = require('../utils/helper');
 
 class RegionService {

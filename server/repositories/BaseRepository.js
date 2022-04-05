@@ -72,6 +72,9 @@ class BaseRepository {
     if (options && options.limit) {
       promise = promise.limit(options && options.limit);
     }
+    if (options && options.offset) {
+      promise = promise.offset(options && options.offset);
+    }
     const result = await promise;
     expect(result).a(expect.any(Array));
     return result;
