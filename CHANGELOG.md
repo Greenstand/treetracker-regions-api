@@ -1,3 +1,15 @@
+## [1.2.5](https://github.com/Greenstand/treetracker-regions-api/compare/v1.2.4...v1.2.5) (2022-05-03)
+
+
+### Bug Fixes
+
+* add migration to make owner_id nullable ([0bd8d07](https://github.com/Greenstand/treetracker-regions-api/commit/0bd8d077c61718818cd9d79764193d0d7a2ca981))
+* add offset support to repository ([7f88032](https://github.com/Greenstand/treetracker-regions-api/commit/7f880323aa4dae4f398f108c2f232971881b6c35))
+* add sorting for regions ([5296335](https://github.com/Greenstand/treetracker-regions-api/commit/529633528dd4066ac75c10a8efa1af33d329721f))
+* add sorting to collections ([e8cb4c2](https://github.com/Greenstand/treetracker-regions-api/commit/e8cb4c25c8866ccbe450296d02189d21284ff406))
+* allow null values for owner_id ([18facd8](https://github.com/Greenstand/treetracker-regions-api/commit/18facd83505b5b139ac9f40a94ad5a176b9f6c78))
+* update collection get response ([deeaa9f](https://github.com/Greenstand/treetracker-regions-api/commit/deeaa9fa1dbec929176ac3a1ce2dfb75a3b84dec))
+
 ## [1.2.4](https://github.com/Greenstand/treetracker-regions-api/compare/v1.2.3...v1.2.4) (2022-04-05)
 
 
