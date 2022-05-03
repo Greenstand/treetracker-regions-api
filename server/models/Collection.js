@@ -23,10 +23,11 @@ class Collection {
     });
   }
 
-  async getCollections(filter = {}, limitOptions) {
+  async getCollections(filter = {}, limitOptions, sortOptions) {
     const collections = await this._collectionRepository.getByFilter(
       filter,
       limitOptions,
+      sortOptions,
     );
 
     return collections.map((row) => this.constructor.Collection(row));

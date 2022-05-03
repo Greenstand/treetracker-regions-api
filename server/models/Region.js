@@ -60,10 +60,11 @@ class Region {
     return this._regionRepository.getShapeByRegionId(id);
   }
 
-  async getRegions(filter = {}, limitOptions) {
+  async getRegions(filter = {}, limitOptions, sortOptions) {
     const regions = await this._regionRepository.getByFilter(
       filter,
       limitOptions,
+      sortOptions,
     );
 
     return regions.map((row) => this.constructor.Region(row));

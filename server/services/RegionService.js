@@ -1,5 +1,5 @@
 const Region = require('../models/Region');
-const Session = require('../models/Session');
+const Session = require('../database/Session');
 const { checkGeometryType } = require('../utils/helper');
 
 class RegionService {
@@ -41,8 +41,8 @@ class RegionService {
     }
   }
 
-  async getRegions(filter, limitOptions) {
-    return this._region.getRegions(filter, limitOptions);
+  async getRegions(filter, limitOptions, sortOptions) {
+    return this._region.getRegions(filter, limitOptions, sortOptions);
   }
 
   async getRegionsCount(filter) {

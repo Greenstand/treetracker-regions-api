@@ -12,7 +12,7 @@ const collectionIdQuerySchema = Joi.object({
 }).unknown(false);
 
 const collectionPatchQuerySchema = Joi.object({
-  owner_id: Joi.string().uuid(),
+  owner_id: Joi.string().uuid().allow(null),
   name: Joi.string(),
 }).unknown(false);
 
@@ -21,6 +21,8 @@ const collectionGetQuerySchema = Joi.object({
   name: Joi.string(),
   limit: Joi.number().integer().greater(0).less(501),
   offset: Joi.number().integer().greater(-1),
+  sort_by: Joi.string().valid('name'),
+  order: Joi.string().valid('asc', 'desc'),
 }).unknown(false);
 
 const collectionHandlerGet = async function (req, res, _next) {
@@ -30,6 +32,7 @@ const collectionHandlerGet = async function (req, res, _next) {
 
   const filter = { ...req.query };
   const limitOptions = {};
+  const sortOptions = { orderBy: filter.sort_by, order: filter.order };
 
   const defaultRange = { limit: 100, offset: 0 };
   limitOptions.limit = +filter.limit || defaultRange.limit;
@@ -37,6 +40,8 @@ const collectionHandlerGet = async function (req, res, _next) {
 
   delete filter.limit;
   delete filter.offset;
+  delete filter.sort_by;
+  delete filter.order;
 
   log.debug('filter', filter);
   log.debug('limitOptions', limitOptions);
@@ -45,6 +50,7 @@ const collectionHandlerGet = async function (req, res, _next) {
   const collections = await collectionService.getCollections(
     filter,
     limitOptions,
+    sortOptions,
   );
   const count = await collectionService.getCollectionsCount(filter);
 
@@ -57,9 +63,11 @@ const collectionHandlerGet = async function (req, res, _next) {
     queryObject: { ...filter, ...limitOptions },
   });
 
-  res
-    .status(200)
-    .json({ collections, links, query: { count, ...limitOptions, ...filter } });
+  res.status(200).json({
+    collections,
+    links,
+    query: { count, ...req.query, ...limitOptions },
+  });
 };
 
 const collectionHandlerGetByCollectionId = async function (req, res, _next) {

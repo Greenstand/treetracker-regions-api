@@ -5,7 +5,7 @@ const { addShapeUrlToRegionArrayObjects } = require('../utils/helper');
 const HttpError = require('../utils/HttpError');
 
 const uploadPostSchema = Joi.object({
-  owner_id: Joi.string().uuid().required(),
+  owner_id: Joi.string().uuid().allow(null),
   collection_name: Joi.string(),
   region_name_property: Joi.string().required(),
   show_on_org_map: Joi.boolean(),

@@ -1,7 +1,7 @@
 /*
  * A object to indicate current session, currently, use for database session, like a transaction session. So with knowing the current database transaction session, we can easily break the current process, and rollback the operation, and if encounter any accidentally problem or failure, we can rollback all operations.
  */
-const knex = require('../database/knex');
+const knex = require('./knex');
 
 class Session {
   constructor() {

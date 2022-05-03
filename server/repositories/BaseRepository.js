@@ -63,7 +63,7 @@ class BaseRepository {
    * options:
    *  limit: number
    */
-  async getByFilter(filter, options) {
+  async getByFilter(filter, options, sortOptions) {
     let promise = this._session
       .getDB()
       .select()
@@ -71,6 +71,15 @@ class BaseRepository {
       .where((builder) => this.whereBuilder(filter, builder));
     if (options && options.limit) {
       promise = promise.limit(options && options.limit);
+    }
+    if (options && options.offset) {
+      promise = promise.offset(options && options.offset);
+    }
+    if (sortOptions && sortOptions.orderBy) {
+      promise = promise.orderBy(
+        sortOptions.orderBy,
+        sortOptions.order || 'asc',
+      );
     }
     const result = await promise;
     expect(result).a(expect.any(Array));
