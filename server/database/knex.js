@@ -1,9 +1,12 @@
 require('dotenv').config();
-const expect = require('expect-runtime');
 const knex = require('knex');
 const connection = require('../../config/config').connectionString;
 
-expect(connection).to.match(/^postgresql:\//);
+const postgresPattern = /^postgresql:\//;
+
+if (!postgresPattern.test(connection)) {
+  throw new Error('invalid database connection url received');
+}
 
 const knexConfig = {
   client: 'pg',
@@ -11,7 +14,7 @@ const knexConfig = {
   connection,
   pool: {
     min: 0,
-    max: 100,
+    max: 10,
   },
 };
 
